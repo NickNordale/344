@@ -1,0 +1,27 @@
+Nick Nordale
+
+I started this assignment by downloading Windows 10 and partioning my OS X hard drive so that I could start running bootcamp. This 
+took a long time because I needed to borrow a somewhat large flash drive and because the downloads took a long time.
+
+I then created an AWS account and spun up my EC2 instance. I followed the directions in the spec and used the Canvas discussion board to 
+solve any problems I ran into. I had a few issues but luckily nothing that I could solve with some googling.
+
+I then downloaded FileZilla and uploaded my pem key file. I had a small issue here, I don't think FileZilla automatically created a .ppk
+file for me (or else I clicked through too quickly without specifying a file path) and so I used PuTTYgen to create a .ppk file instead.
+
+I used PuTTY to run all the commands from the spec and I was able to display my index.php (Hello World!) file.
+
+I then went back to my AWS dahsboard and created and RDS instance. Setting up the security groups correctly gave me some trouble. I initially 
+let Amazon auto generate a security group and then I later added what I read on Canvas was the right inbound rule but I was unable to 
+connect to my RDS instance using XAMPP - oh ya I downloaded XAMPP and edited the Apache config files per an example I found on Stackoverflow.
+I ended up messing around with that for a while until I decided to start over, so I deleted that RDS instance. I then created the 
+security group beforehand so that during creation it would already be there for selection. This worked and I was able to connect using
+XAMPP. I used the phpMyAdmin import function to import the csv.
+
+I then ran queries to rename the column names to more familiar NBA conventions (I think I should've manually done this before uploading).
+
+Then I created a php file and used a PDO to connect to my database. I used the RDS connection I had setup with XAMPP to code my php 
+file on my localhost.
+
+When I finished my site, I uploaded my files to my EC2 instance and voila, my site was functional at my public DNS.
+

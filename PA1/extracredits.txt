@@ -1,0 +1,12 @@
+Nick Nordale
+
+I did the AJAX extra credit. You can trigger it by typing in the start of a player's name for example if you 
+enter "johns", without hitting enter or clicking go, you will see the website return all the players that have names 
+containing that string (I think they all have last name "Johnson" in this case). With that same query, if you delete the 's'
+at the end of "johns" you will see the website filter back in all the additional players who's names contain "john".
+
+I implemented this feature by using the jQuery AJAX method. I create a keyup function, so everytime there is a keyup on the
+input element the ajax method does a get request to /index.php with the current search value. I think this would've been easier
+to do if I split my php into separate files but I didn't want to so I basically get a whole new index.php pages back from my ajax 
+request as a string. I then grab the part of that string that represents the query results and I set it as the html for my tbody
+element.
