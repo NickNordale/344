@@ -1,0 +1,14 @@
+I started by downloading VS 2015 onto my bootcamp disk.
+Then I messed around with my solution configuration in VS for a while.
+Then I download the wiki data and wrote my console app and cleaned the data
+by removing title with special characters.
+Then I created my storage account and uploaded the file as an Azure blob.
+Then I wrote my downloadwiki webmethod that grabbed the data off my blob
+and wrote it to my local disk.
+Then I started building my Trie and Node classes and my webmethod to build the Trie
+and search the trie.
+Initially I left a lot of the logic for adding and searching titles in the webmethod 
+but I later realized I had to move that to the Trie.cs file.
+Then I build my html page with ajax calls to my searchTrie webmethod.
+This took me a long time because I didn't uncomment "[ScriptService]"
+and it took me forever to realize why my ajax calls were failing.
