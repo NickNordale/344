@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="main.css" />
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>   
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#wiki-search").keyup(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "getQuerySuggestions.asmx/searchTrie",
+                    data: "{'query':'" + $("#wiki-search").val() + "'}",                    
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",                   
+                    success: function (data) {
+                        var possibleArray = $.parseJSON(data.d);
+                        autoC(possibleArray);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            });
+
+            function autoC(ting) {
+                $("#wiki-search").autocomplete({
+                    minLength: 1,
+                    source: ting
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div id="form-div">
+            <form>
+                <fieldset class="form-group">
+                    <label for="wiki-search">Search wiki titles:</label>
+                    <input type="text" class="form-control" id="wiki-search" name="query" placeholder="search wiki titles">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </fieldset>
+            </form>
+        </div>        
+    </div>
+
+</body>
+</html>

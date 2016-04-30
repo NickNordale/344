@@ -1,0 +1,17 @@
+﻿
+.container{
+    padding-top: 30px;
+}
+
+#form-div {
+    width: 33%;
+    margin-left: 33%;
+    margin-right: 33%;
+}
+
+#wiki-search {
+}
+
+button {
+    margin-top: 10px;
+}
