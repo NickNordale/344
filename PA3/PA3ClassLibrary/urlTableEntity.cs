@@ -9,12 +9,12 @@ namespace PA3ClassLibrary
 {
     public class urlTableEntity : TableEntity
     {
-        public urlTableEntity(string url, string title, string date)
+        public urlTableEntity(string url, string title)
         {
             this.PartitionKey = url;
             this.RowKey = title;
 
-            this.Date = date;
+            this.Date = DateTime.Now.ToString();
         }
 
         public urlTableEntity() { }

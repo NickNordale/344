@@ -58,4 +58,6 @@ C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\zh-Hans\System.Spatial.
 C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\zh-Hant\System.Spatial.resources.dll
 C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\obj\Debug\WorkerRole1.dll
 C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\obj\Debug\WorkerRole1.pdb
+C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\PA3ClassLibrary.dll
+C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\PA3ClassLibrary.pdb
 C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\obj\Debug\WorkerRole1.csprojResolveAssemblyReference.cache

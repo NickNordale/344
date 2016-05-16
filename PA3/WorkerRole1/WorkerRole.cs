@@ -12,6 +12,9 @@ using Microsoft.WindowsAzure.Storage;
 using System.Configuration;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage.Queue;
+using System.IO;
+using PA3ClassLibrary;
+//using Microsoft.ServiceBus;
 
 namespace WorkerRole1
 {
@@ -28,7 +31,7 @@ namespace WorkerRole1
 
         private static CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
         private static CloudQueue urlQueue = queueClient.GetQueueReference("myurls");
-        private static CloudQueue startStopQueue = queueClient.GetQueueReference("startStop");
+        private static CloudQueue startStopQueue = queueClient.GetQueueReference("startstop");
 
         private HashSet<string> crawledLinks;
         private HashSet<string> disallowedLinks;
@@ -37,14 +40,55 @@ namespace WorkerRole1
         {
             Trace.TraceInformation("WorkerRole1 is running");
 
-            CloudQueueMessage statusMessage = startStopQueue.GetMessage();
-            string status = statusMessage.AsString;
+            Thread.Sleep(50);
 
-            if (status == "start")
+            CloudQueueMessage statusMsg;
+
+            //startStopQueue.CreateIfNotExists();
+
+            if (startStopQueue.Exists() && (statusMsg = startStopQueue.GetMessage()) != null)
             {
-                //WebClient wc = new WebClient();
-                //wc.D
+                if (statusMsg.AsString == "start init")
+                {
+                    disallowedLinks = new HashSet<string>();
+
+                    string cnnRobotsUrl = GetMessage();
+                    List<string> cnnXml = ParseRobots(cnnRobotsUrl);
+
+                    foreach (string cnnUrl in cnnXml)
+                    {
+                        CloudQueueMessage newMessage = new CloudQueueMessage(cnnUrl);
+                        urlQueue.AddMessageAsync(newMessage);
+                    }
+
+                    string brRobotsUrl = GetMessage();
+                    List<string> brXml = ParseRobots(brRobotsUrl);
+
+                    foreach (string brUrl in brXml)
+                    {
+                        if (brUrl.Contains("/nba.xml"))
+                        {
+                            CloudQueueMessage newMessage = new CloudQueueMessage(brUrl);
+                            urlQueue.AddMessageAsync(newMessage);
+                        }                        
+                    }
+                }
+                //else if (statusMsg.AsString == "start") { }
+                //else { }
+                startStopQueue.DeleteMessage(statusMsg);
             }
+
+            
+
+            
+
+            //OnMessageOptions msgOptions = new OnMessageOptions();
+            //startStopQueue.
+
+
+            
+
+
 
             /* try
             {
@@ -56,7 +100,74 @@ namespace WorkerRole1
             } */
         }
 
+        public string GetMessage()
+        {
+            CloudQueueMessage retrievedUrl = urlQueue.GetMessage();
+            string urlString = retrievedUrl.AsString;
 
+            urlQueue.DeleteMessage(retrievedUrl);
+
+            return urlString;
+        }
+
+        public List<string> ParseRobots(string urlIn)
+        {
+            WebClient wc = new WebClient();
+            Stream file = wc.OpenRead(urlIn);
+            StreamReader sr = new StreamReader(file);
+            List<string> lines = new List<string>();
+            string currLine = "";
+
+            while ((currLine = sr.ReadLine()) != null)
+            {
+                lines.Add(currLine);
+            }
+
+            List<string> xmlLinks = new List<string>();
+
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("Sitemap") && line.Trim().EndsWith(".xml") || line.Trim().EndsWith("nba.xml"))
+                {
+                    string smUrl = line.Substring(line.IndexOf("http"));
+                    xmlLinks.Add(smUrl);
+                }
+                else if (line.StartsWith("Disallow"))
+                {
+                    string addDisallow = line.Trim().Substring(line.IndexOf('/'));
+                    disallowedLinks.Add(addDisallow);
+                }
+            }
+
+            // this makes either "cnn robots" or "bleacherreport robots"
+            string title = urlIn.Substring(urlIn.IndexOf("www.") + 4);
+            string titleFinal = title.Remove(title.IndexOf(".com")) + " robots";
+            string encodedUrl = EncodeUrlInKey(urlIn);
+            urlTableEntity insertUrl = new urlTableEntity(encodedUrl, titleFinal);
+            TableOperation insertOperation = TableOperation.InsertOrReplace(insertUrl);
+            urlTable.Execute(insertOperation);
+
+            return xmlLinks;
+        }
+
+        /*public void crawl()
+        {
+
+        }*/
+
+        private static String EncodeUrlInKey(String url)
+        {
+            var keyBytes = System.Text.Encoding.UTF8.GetBytes(url);
+            var base64 = System.Convert.ToBase64String(keyBytes);
+            return base64.Replace('/', '_');
+        }
+
+        /*private static String DecodeUrlInKey(String encodedKey)
+        {
+            var base64 = encodedKey.Replace('_', '/');
+            byte[] bytes = System.Convert.FromBase64String(base64);
+            return System.Text.Encoding.UTF8.GetString(bytes);
+        }*/
 
         public override bool OnStart()
         {

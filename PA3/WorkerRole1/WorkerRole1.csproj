@@ -87,6 +87,12 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PA3ClassLibrary\PA3ClassLibrary.csproj">
+      <Project>{8c086edd-c7c4-40a5-9f52-9425305b96a3}</Project>
+      <Name>PA3ClassLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -86,4 +86,6 @@ C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\roslyn\System.IO.FileSystem.dll
 C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\roslyn\System.IO.FileSystem.Primitives.dll
 C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\roslyn\vbc.exe.config
 C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\roslyn\vbc.rsp
+C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\PA3ClassLibrary.dll
+C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\PA3ClassLibrary.pdb
 C:\Users\Nick\Source\Repos\344\PA3\WebRole1\obj\Debug\WebRole1.csprojResolveAssemblyReference.cache

@@ -1,6 +1,7 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.Table;
+using PA3ClassLibrary;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -29,47 +30,47 @@ namespace WebRole1
 
         private static CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
         private static CloudQueue urlQueue = queueClient.GetQueueReference("myurls");
-        private static CloudQueue startStopQueue = queueClient.GetQueueReference("startStop");
+        private static CloudQueue startStopQueue = queueClient.GetQueueReference("startstop");
+
+        private Boolean initialized = false;
 
         [WebMethod]
         public string startCrawling()
         {
-            /*urlTable.DeleteIfExistsAsync();
-            urlQueue.DeleteIfExistsAsync();
-            startStopQueue.DeleteIfExistsAsync();*/
+            if (!initialized)
+            {
+                startStopQueue.CreateIfNotExists();
+                urlTable.CreateIfNotExists();
+                urlQueue.CreateIfNotExists();
 
-            urlTable.CreateIfNotExists();
-            urlQueue.CreateIfNotExists();
+                CloudQueueMessage cnnRobots = new CloudQueueMessage("http://www.cnn.com/robots.txt");
+                urlQueue.AddMessage(cnnRobots);
+
+                CloudQueueMessage brRobots = new CloudQueueMessage("http://www.bleacherreport.com/robots.txt");
+                urlQueue.AddMessage(brRobots);
+
+                CloudQueueMessage startMsg = new CloudQueueMessage("start init");
+                startStopQueue.AddMessage(startMsg);
+
+                initialized = true;
+            }
+            else
+            {
+                CloudQueueMessage startMsg = new CloudQueueMessage("start");
+                startStopQueue.AddMessage(startMsg);
+            }
+
+            return "Started crawling.";
+        }
+
+        [WebMethod]
+        public string stopCrawling()
+        {
             startStopQueue.CreateIfNotExists();
+            CloudQueueMessage stopMsg = new CloudQueueMessage("stop");
+            startStopQueue.AddMessage(stopMsg);
 
-            string cnnRobots = "http://www.cnn.com/robots.txt";
-            string brRobots = "http://bleacherreport.com/robots.txt";
-
-            CloudQueueMessage cnn = new CloudQueueMessage(cnnRobots);
-            urlQueue.AddMessage(cnn);
-
-            CloudQueueMessage br = new CloudQueueMessage(brRobots);
-            urlQueue.AddMessage(br);
-
-            CloudQueueMessage initiateCrawl = new CloudQueueMessage("start");
-            startStopQueue.AddMessage(initiateCrawl);
-
-            WebClient wc = new WebClient();
-            string sout = wc.DownloadString("http://www.cnn.com/robots.txt");
-
-            return sout;
-        }
-
-        [WebMethod]
-        public string pauseCrawling()
-        {
-            return "Paused crawling.";
-        }
-
-        [WebMethod]
-        public string resumeCrawling()
-        {
-            return "Resumed crawling.";
+            return "Stopped crawling.";
         }
     }
 }
