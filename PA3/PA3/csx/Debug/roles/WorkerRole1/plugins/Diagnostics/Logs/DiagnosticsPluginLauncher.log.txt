@@ -1,0 +1,27 @@
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] At least one other instance of the launcher is running. Will wait until they all finish
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Service running in Emulator Mode, will not wait/kill other instances of the launcher
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] DiagnosticsStoreRootPath set to: C:\Users\Nick\AppData\Local\dftmp\Resources\c307430a-fe0b-4e22-b3e1-9944ce79853b
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Loading config file: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Config file to read: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Checking VM Type
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Extension set to Emulator Mode
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Reading XML configuration file
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Bypassing private config decryption
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Stopping the running plugin, if any
+DiagnosticsPluginLauncher.exe Error: 0 : [5/15/2016 7:24:14 AM] System.Management.ManagementException: Out of memory 
+   at System.Management.ManagementException.ThrowWithExtendedInfo(ManagementStatus errorCode)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at Microsoft.WindowsAzure.Plugins.Launcher.PluginLauncherStart.FindRunningWad(String procName)
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] No DiagnosticsPlugin is running.
+DiagnosticsPluginLauncher.exe Information: 0 : [5/15/2016 7:24:14 AM] Killing any DiagnosticsPlugin that might remain.
+DiagnosticsPluginLauncher.exe Error: 0 : [5/15/2016 7:24:14 AM] Exception of type 'System.OutOfMemoryException' was thrown.
+DiagnosticsPluginLauncher.exe Error: 0 : [5/15/2016 7:24:14 AM] System.OutOfMemoryException: Exception of type 'System.OutOfMemoryException' was thrown.
+   at Microsoft.Azure.Plugins.Diagnostics.dll.StatusReporter.SetError(String op, String message, Int32 code)
+   at Microsoft.WindowsAzure.Plugins.Launcher.PluginLauncherStart.StopPlugin(EventWaitHandle pluginShutDownEvent, EventWaitHandle pluginTotalShutDownEvent, Boolean forceTotalShutdown)
+   at Microsoft.WindowsAzure.Plugins.Launcher.PluginLauncherStart.MainImpl(String[] args)
+   at Microsoft.WindowsAzure.Plugins.Launcher.PluginLauncherStart.Main(String[] args)
