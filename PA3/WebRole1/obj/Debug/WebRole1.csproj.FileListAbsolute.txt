@@ -89,3 +89,6 @@ C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\roslyn\vbc.rsp
 C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\PA3ClassLibrary.dll
 C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\PA3ClassLibrary.pdb
 C:\Users\Nick\Source\Repos\344\PA3\WebRole1\obj\Debug\WebRole1.csprojResolveAssemblyReference.cache
+C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\HtmlAgilityPack.dll
+C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\HtmlAgilityPack.pdb
+C:\Users\Nick\Source\Repos\344\PA3\WebRole1\bin\HtmlAgilityPack.xml

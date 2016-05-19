@@ -141,3 +141,10 @@ C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WebRole1\bin\PA3ClassLibrary.dl
 C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WebRole1\bin\PA3ClassLibrary.pdb
 C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WorkerRole1\PA3ClassLibrary.dll
 C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WorkerRole1\PA3ClassLibrary.pdb
+C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WorkerRole1\Microsoft.Azure.Plugins.Diagnostics.dll.dll
+C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WorkerRole1\Microsoft.Cis.Monitoring.Query.dll
+C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WebRole1\bin\HtmlAgilityPack.dll
+C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WebRole1\bin\HtmlAgilityPack.pdb
+C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WebRole1\bin\HtmlAgilityPack.xml
+C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WorkerRole1\HtmlAgilityPack.dll
+C:\Users\Nick\Source\Repos\344\PA3\PA3\obj\Debug\WorkerRole1\HtmlAgilityPack.pdb

@@ -55,3 +55,6 @@ C:\Users\Nick\Source\Repos\344\PA3\PA3ClassLibrary\bin\Debug\ru\System.Spatial.r
 C:\Users\Nick\Source\Repos\344\PA3\PA3ClassLibrary\bin\Debug\zh-Hans\System.Spatial.resources.dll
 C:\Users\Nick\Source\Repos\344\PA3\PA3ClassLibrary\bin\Debug\zh-Hant\System.Spatial.resources.dll
 C:\Users\Nick\Source\Repos\344\PA3\PA3ClassLibrary\obj\Debug\PA3ClassLibrary.csprojResolveAssemblyReference.cache
+C:\Users\Nick\Source\Repos\344\PA3\PA3ClassLibrary\bin\Debug\HtmlAgilityPack.dll
+C:\Users\Nick\Source\Repos\344\PA3\PA3ClassLibrary\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\Nick\Source\Repos\344\PA3\PA3ClassLibrary\bin\Debug\HtmlAgilityPack.xml

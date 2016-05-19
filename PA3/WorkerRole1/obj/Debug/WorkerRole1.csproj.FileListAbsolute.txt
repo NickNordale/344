@@ -61,3 +61,8 @@ C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\obj\Debug\WorkerRole1.pdb
 C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\PA3ClassLibrary.dll
 C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\PA3ClassLibrary.pdb
 C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\obj\Debug\WorkerRole1.csprojResolveAssemblyReference.cache
+C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\Microsoft.Azure.Plugins.Diagnostics.dll.dll
+C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\Microsoft.Cis.Monitoring.Query.dll
+C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\HtmlAgilityPack.dll
+C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\Nick\Source\Repos\344\PA3\WorkerRole1\bin\Debug\HtmlAgilityPack.xml

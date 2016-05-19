@@ -3,8 +3,142 @@
 <head>
     <title></title>
 	<meta charset="utf-8" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 </head>
 <body>
+    <div><p id="state" class="results"></p></div>
 
+    <div><p id="machine-counters" class="results"></p></div>
+    
+    <div><p id="url-count" class="results"></p></div>
+    
+    <div><p id="last-10" class="results"></p></div>
+    
+    <div><p id="queue-size" class="results"></p></div>
+    
+    <div><p id="table-size" class="results"></p></div>
+    
+    <div id="errors"></div>
+
+    <input type="button" id="clear-everything" value="Clear everything"/>
+    
+    <input type="button" id="start-crawling" value="Start crawling"/>
+
+    <form>
+        <input type="text" id="get-page-title" />
+        <input type="button" id="get-page-title-submit" />
+    </form>
+    <p id="get-page-title-res"></p>
+
+    <script type="text/javascript">
+        function loadAll() {
+            getState();
+            getQueueSize();
+            loadData();
+            getLast10();
+        }
+
+        function getQueueSize() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getQueueSize",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#queue-size").text(data.d);
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        function getState() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getState",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#state").text(data.d);
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        function getLast10() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getLast10",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var lastTenArr = $.parseJSON(data.d);
+                    var tenStr = "";
+                    $.each(lastTenArr, function (index, value) {
+                        tempStr += "<p>" + value + "</p>";
+                    });
+                    $("#last-10").html(tempStr);
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        function getErrors() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getErrors",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var errorArr = $.parseJSON(data.d);
+                    if (errorArr.length != 0) {
+                        var tempStr = "";
+                        $.each(errorArr, function (index, value) {
+                            tempStr += "<p>" + value + "</p>";
+                        });
+                        $("#errors").html(tempStr);
+                    } else {
+                        $("#errors").html("<p>No errors yet.</p>");
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        }
+
+        function loadData() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getData",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var possibleArray = $.parseJSON(data.d);
+                    console.log(possibleArray);
+                    $("#machine-counters").text(possibleArray.CPU + ", " + possibleArray.RAM);
+                    $("#url-count").text(possibleArray.UrlCount);
+                    $("#table-size").text(possibleArray.TableCount);
+                    getErrors();
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        };
+
+        loadAll();
+        setInterval(function() {
+            loadAll()
+        }, 10000);
+    </script>
 </body>
 </html>
