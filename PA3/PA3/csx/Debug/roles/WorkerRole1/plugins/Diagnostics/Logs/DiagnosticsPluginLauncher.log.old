@@ -1,0 +1,15 @@
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] DiagnosticsStoreRootPath set to: C:\Users\Nick\AppData\Local\dftmp\Resources\4cf70800-85e9-4b41-b7f7-5c947607668c
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Loading config file: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Config file to read: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Checking VM Type
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Extension set to Emulator Mode
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Reading XML configuration file
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Bypassing private config decryption
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:47 AM] Stopping the running plugin, if any
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:48 AM] No DiagnosticsPlugin is running.
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:48 AM] Killing any DiagnosticsPlugin that might remain.
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:48 AM] Killing any MonAgentHost that might remain.
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:48 AM] Diagnostics plugin stopped successfully
+DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:06:48 AM] Resetting DiagnosticPlugin

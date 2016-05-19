@@ -9,27 +9,47 @@
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 </head>
 <body>
-    <div><p id="state" class="results"></p></div>
+    <button id="start-crawling" class="btn btn-primary">Start crawling</button>
 
-    <div><p id="machine-counters" class="results"></p></div>
-    
-    <div><p id="url-count" class="results"></p></div>
-    
-    <div><p id="last-10" class="results"></p></div>
-    
-    <div><p id="queue-size" class="results"></p></div>
-    
-    <div><p id="table-size" class="results"></p></div>
-    
-    <div id="errors"></div>
+    <button id="clear-everything" class="btn btn-danger">Clear everything</button>
 
-    <input type="button" id="clear-everything" value="Clear everything"/>
+    <div>
+        <p><span class="h3">State: </span><span id="state" class="results"></span></p>
+    </div>
+
+    <div>
+        <p><span class="h6">CPU Utilization%: </span><span id="cpu" class="results"></span></p>
+        <p><span class="h6">RAM available: </span><span id="ram" class="results"></span></p>
+    </div>
     
-    <input type="button" id="start-crawling" value="Start crawling"/>
+    <div>
+        <p><span class="h4"># of URLs visited: </span><span id="url-count" class="results"></span></p>
+    </div>
+    
+    <div>
+        <span class="h4">Last 10 URLs Visited:</span>
+        <div id="last-10"></div>
+    </div>
+    
+    <div>
+        <p><span class="h4">Queue size: </span><span id="queue-size" class="results"></span></p>
+    </div>
+
+    <div>
+        <p><span class="h4">Table size: </span><span id="table-size" class="results"></span></p>
+    </div>
+    
+    <div>
+        <span class="h4">Errors:</span>
+        <div id="errors"></div>
+    </div>
 
     <form>
-        <input type="text" id="get-page-title" />
-        <input type="button" id="get-page-title-submit" />
+        <fieldset>
+            <label for="get-page-title">Search for page titles by url:</label>
+            <input type="text" id="get-page-title" class="form-control" placeholder="enter url"/>
+            <button id="get-page-title-submit" class="btn btn-primary">Search</button>
+        </fieldset>
     </form>
     <p id="get-page-title-res"></p>
 
@@ -79,7 +99,7 @@
                 dataType: "json",
                 success: function (data) {
                     var lastTenArr = $.parseJSON(data.d);
-                    var tenStr = "";
+                    var tempStr = "";
                     $.each(lastTenArr, function (index, value) {
                         tempStr += "<p>" + value + "</p>";
                     });
@@ -90,6 +110,38 @@
                 }
             });
         }
+
+        $("#get-page-title-submit").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/search",
+                data: "{'url':'" + $("#get-page-title").val() + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var possibleArray = $.parseJSON(data.d);
+                    $("#get-page-title-rest").text(possibleArray.Title);
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+
+        $("#start-crawling").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/startCrawling",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                   
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
 
         function getErrors() {
             $.ajax({
@@ -123,8 +175,8 @@
                 dataType: "json",
                 success: function (data) {
                     var possibleArray = $.parseJSON(data.d);
-                    console.log(possibleArray);
-                    $("#machine-counters").text(possibleArray.CPU + ", " + possibleArray.RAM);
+                    $("#cpu").text(possibleArray.CPU);
+                    $("#ram").text(possibleArray.RAM);
                     $("#url-count").text(possibleArray.UrlCount);
                     $("#table-size").text(possibleArray.TableCount);
                     getErrors();
