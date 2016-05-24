@@ -6,8 +6,16 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "PA4", "PA4\PA4.ccproj", "{B9C77FE2-00EB-402C-AD38-A56488BF3C53}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRole1", "WebRole1\WebRole1.csproj", "{3CAD04BC-5CA8-4D14-8EE8-2849A055180F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{09B32087-5D1A-40C9-953E-11048026F593} = {09B32087-5D1A-40C9-953E-11048026F593}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerRole1", "WorkerRole1\WorkerRole1.csproj", "{3AC76DF5-2260-494A-966C-B8C93014337A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{09B32087-5D1A-40C9-953E-11048026F593} = {09B32087-5D1A-40C9-953E-11048026F593}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PA4ClassLibrary", "PA4ClassLibrary\PA4ClassLibrary.csproj", "{09B32087-5D1A-40C9-953E-11048026F593}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +35,10 @@ Global
 		{3AC76DF5-2260-494A-966C-B8C93014337A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AC76DF5-2260-494A-966C-B8C93014337A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AC76DF5-2260-494A-966C-B8C93014337A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09B32087-5D1A-40C9-953E-11048026F593}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09B32087-5D1A-40C9-953E-11048026F593}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09B32087-5D1A-40C9-953E-11048026F593}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09B32087-5D1A-40C9-953E-11048026F593}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
