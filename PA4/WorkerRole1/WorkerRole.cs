@@ -10,6 +10,14 @@ using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 
+// TODO: Change Table storage to map words in title to URL, instead of the current page URL 
+//       to title/date.For example, if the title is “Microsoft goes IPO” then the key should 
+//       be “microsoft”, “goes”, “ipo” and the value is the<URL, date> pair.This is a simplified inverted index.
+// TODO: Only limit to last X months when parsing sitemap URLs
+// TODO: Fix the crawler for bleacherreport.com.Due to the custom routing issue, we need to upgrade our 
+//       crawler to handle BR.In the sitemap, we only load links in the nba xml. Then in the crawling 
+//       phase -> we only consider links that follow this pattern http://*.bleacherreport.com/articles/*
+
 namespace WorkerRole1
 {
     public class WorkerRole : RoleEntryPoint

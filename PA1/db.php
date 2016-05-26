@@ -2,17 +2,17 @@
 
 class Database {
 
-    private $host = 'nnpa1.cdnehwffc0c2.us-west-2.rds.amazonaws.com:3306';
-    private $user = 'info344user';
-    private $pass = 'nbapassword';
-    private $dbname = 'NBAPLAYERS';
+    public $host = 'nnpa1.cdnehwffc0c2.us-west-2.rds.amazonaws.com:3306';
+    public $user = 'info344user';
+    public $pass = 'nbapassword';
+    public $dbname = 'NBAPLAYERS';
 
-    private $dbh;
-    private $error;
+    public $dbh;
+    public $error;
 
-    private $stmt;
+    public $stmt;
 
-    public function __construct(){
+    public function connect(){
         $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
         $options = array(
             //PDO::ATTR_PERSISTENT    => true,

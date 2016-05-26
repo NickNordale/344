@@ -1,7 +1,17 @@
 <?php
 
+//$callback = $_GET['callback'];
+//$data = [data stuff that you are passing back];
+//echo $callback . "(" . json_encode($data) . ")";
+
+//include 'db.php';
+//include 'player.php';
+
 $conn = new PDO('mysql:host=nnpa1.cdnehwffc0c2.us-west-2.rds.amazonaws.com:3306;dbname=NBAPLAYERS', 'info344user', 'nbapassword');
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+//$db = new Database();
+//$db->connect();
 
 if(isset($_GET['playerName'])) {
 	$name = $_GET['playerName'];
@@ -35,7 +45,7 @@ if ($search->execute()) {
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
-	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -54,6 +64,7 @@ if ($search->execute()) {
 						type: 'GET',
 						data: { playerName: keyword },
 						success: function (result) {
+							console.log(result);
 							console.log(keyword);
 							var trim1 = $.trim(result.substr(result.indexOf("<tr id=\"res\">")));
 							var trim2 = $.trim(trim1.substr(0, trim1.indexOf("</tbody>")));

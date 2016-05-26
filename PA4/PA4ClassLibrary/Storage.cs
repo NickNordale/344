@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
@@ -22,5 +23,9 @@ namespace PA4ClassLibrary
         private static CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
         private static CloudQueue urlQueue = queueClient.GetQueueReference("pafurlqueue");
         private static CloudQueue statusQueue = queueClient.GetQueueReference("pafstatusqueue");
+
+        private static CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+        private static CloudBlobContainer container = blobClient.GetContainerReference("pa2");
+        private static CloudBlockBlob blockBlob = container.GetBlockBlobReference("ValidTitles_lowercase_nodigits.txt");
     }
 }
