@@ -73,14 +73,14 @@ namespace WorkerRole1
             {
                 if (statusMsg.AsString == "start init")
                 {
-                    string cnnRobotsUrl = "http://www.cnn.com/robots.txt";
-                    List<string> cnnXml = ParseRobots(cnnRobotsUrl);
+                    //string cnnRobotsUrl = "http://www.cnn.com/robots.txt";
+                    //List<string> cnnXml = ParseRobots(cnnRobotsUrl);
 
-                    foreach (string cnnUrl in cnnXml)
+                    /*foreach (string cnnUrl in cnnXml)
                     {
                         crawlXml(cnnUrl);
                         crawledXmls.Add(cnnUrl);
-                    }
+                    }*/
 
                     string brRobotsUrl = "http://bleacherreport.com/robots.txt";
                     List<string> brXml = ParseRobots(brRobotsUrl);

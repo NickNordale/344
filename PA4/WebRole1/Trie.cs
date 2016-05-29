@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -11,14 +10,6 @@ namespace WebRole1
     {
         public Node root;
         public List<string> outT;
-
-        // CPU
-        private PerformanceCounter theCPUCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        //this.theCPUCounter.NextValue();
-
-        // RAM
-        private PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
-        //this.theMemCounter.NextValue();
 
         public Trie()
         {

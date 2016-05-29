@@ -1,21 +1,9 @@
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] At least one other instance of the launcher is running. Will wait until they all finish
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Service running in Emulator Mode, will not wait/kill other instances of the launcher
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] DiagnosticsStoreRootPath set to: C:\Users\Nick\AppData\Local\dftmp\Resources\4cf70800-85e9-4b41-b7f7-5c947607668c
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Loading config file: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Config file to read: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Checking VM Type
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Extension set to Emulator Mode
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Reading XML configuration file
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Bypassing private config decryption
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:48 AM] Stopping the running plugin, if any
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Found a MonAgentHost.exe. WadArguments: "C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WebRole1\plugins\Diagnostics\Monitor\x64\MonAgentHost.exe" -LocalPath "C:\Users\Nick\AppData\Local\dftmp\Resources\eb4a2244-ab5b-49f3-9715-879e5be83a75\WAD0105"  -ConfigFile "C:\Users\Nick\AppData\Local\dftmp\Resources\eb4a2244-ab5b-49f3-9715-879e5be83a75\WAD0105\Configuration\MaConfig.xml" -ShutDownEvent WADDM-ShutDown-992bc9dc492246c0b6993597877376be  -TotalShutDownEvent WADDM-TotalShutDown-992bc9dc492246c0b6993597877376be -InitializedEvent WADM-StartUp-992bc9dc492246c0b6993597877376be -parent 11900 -events -wadVer1v5 -UseProxyServer -XStoreAccounts WadAccount#true#devstoreaccount1#Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==#http://127.0.0.1:10002#http://127.0.0.1:10001#http://127.0.0.1:10000.
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Found a DiagnosticsPlugin.exe. WadArguments: "C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WebRole1\plugins\Diagnostics\DiagnosticsPlugin.exe" DiagnosticPlugin-ShutdownEvent DiagnosticPlugin-TotalShutdownEvent -wadVer1v5.
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Loading config file: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Config file to read: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Reading XML configuration file
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Bypassing private config decryption
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Found a running wad2 MA not sharing the same local directory
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:49 AM] Killing any DiagnosticsPlugin that might remain.
-DiagnosticsPluginLauncher.exe Information: 0 : [5/19/2016 5:07:50 AM] Found a DiagnosticsPlugin.exe. WadArguments: "C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WebRole1\plugins\Diagnostics\DiagnosticsPlugin.exe" DiagnosticPlugin-ShutdownEvent DiagnosticPlugin-TotalShutdownEvent -wadVer1v5.
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] DiagnosticsStoreRootPath set to: C:\Users\Nick\AppData\Local\dftmp\Resources\7c06412c-76a6-4e3e-aacd-08be46364de4
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Loading config file: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Config file to read: C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Checking VM Type
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Emulator config file set to C:\Users\Nick\Source\Repos\344\PA3\PA3\csx\Debug\roles\WorkerRole1\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Extension set to Emulator Mode
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Reading XML configuration file
+DiagnosticsPluginLauncher.exe Information: 0 : [5/29/2016 12:52:24 AM] Bypassing private config decryption

@@ -11,6 +11,37 @@
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 </head>
 <body>
+
+    <input type="text" name="pa2" placeholder="check the query suggestion" id="wiki-search" />
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#wiki-search").keyup(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "admin.asmx/searchTrie",
+                    data: "{'query':'" + $("#wiki-search").val() + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var possibleArray = $.parseJSON(data.d);
+                        console.log(possibleArray);
+                        autoC(possibleArray);
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            });
+            function autoC(ting) {
+                $("#wiki-search").autocomplete({
+                    minLength: 1,
+                    source: ting
+                });
+            }
+        });
+    </script>
+
     <input type="text" id="player-name" placeholder="player name">
     <button class="btn btn-primary" id="nba-submit">Go</button>
 

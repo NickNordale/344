@@ -1,5 +1,10 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,6 +13,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Script.Services;
 using System.Web.Services;
+using PA4ClassLibrary;
 
 // TODO: Query PA1 API for NBA players
 // TODO: Query table storage for words in website titles
@@ -25,65 +31,46 @@ namespace WebRole1
     [System.Web.Script.Services.ScriptService]
     public class Admin : System.Web.Services.WebService
     {
+        // CPU
+        //private PerformanceCounter theCPUCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+        //this.theCPUCounter.NextValue();
+
+        // RAM
+        //private PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
+        //this.theMemCounter.NextValue();
+
+        public static Trie thisTrie;
+        public static string blobReturn;
+        public static string trieReturn;
+
         // No webmethod to facilitate NBA PA1 request right?
-        /*[WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public void queryNBAPlayers(string query, string callback)
-        {
-            
-        }*/
 
         /*[WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string queryTableStorage()
         {
             return "";
-        }
-
-        public static Trie thisTrie;
-        public static string blobReturn;
-        public static string trieReturn;
-
-        static WebService1()
-        {
-            if (blobReturn != "success")
-            {
-                blobReturn = downloadwiki();
-            }
-            if (trieReturn != "success")
-            {
-                trieReturn = buildTrie();
-            }
-        }
-
-        public static Boolean CanGetMemory()
-        {
-            try
-            {
-                MemoryFailPoint mfp = new MemoryFailPoint(50);
-            }
-            catch (InsufficientMemoryException)
-            {
-                return false;
-            }
-            return true;
-        }
+        }*/
 
         [WebMethod]
-        public static string downloadwiki()
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string downloadwiki()
         {
             string filePath = Path.GetTempPath() + "\\wiki.txt";
             using (var fileStream = File.OpenWrite(filePath))
             {
-                blockBlob.DownloadToStream(fileStream);
+                Storage.BlockBlob.DownloadToStream(fileStream);
             }
 
             return "success";
         }
 
         [WebMethod]
-        public static string buildTrie()
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string buildTrie()
         {
+            PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
+
             string last = "";
             int totalCount = 0;
             List<string> wikiTitles = new List<string>();
@@ -97,23 +84,18 @@ namespace WebRole1
                 }
             }
             thisTrie = new Trie();
-            int titleCount = 0;
             foreach (string title in wikiTitles)
             {
-                if (titleCount >= 1000)
+                if (theMemCounter.NextValue() < 50)
                 {
-                    if (!CanGetMemory())
-                    {
-                        return "last: " + last + ", count: " + totalCount;
-                    }
-                    totalCount += titleCount;
-                    titleCount = 0;
+                    last = title;
+                    break;
                 }
                 thisTrie.addTitle(title);
-                last = title;
-                titleCount++;
+                totalCount++;
             }
-            return "success";
+
+            return "Last title: " + last + ", Total added: " + totalCount;
         }
 
         [WebMethod]
@@ -125,6 +107,41 @@ namespace WebRole1
                 return "";
             }
             return thisTrie.searchForPrefix(query);
-        }*/
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string startCrawling()
+        {
+            Storage.StatusQueue.Clear();
+            CloudQueueMessage startMsg = new CloudQueueMessage("load");
+            Storage.StatusQueue.AddMessage(startMsg);
+
+            return "Started crawling.";
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string stopCrawling()
+        {
+            Storage.StatusQueue.Clear();
+            CloudQueueMessage startMsg = new CloudQueueMessage("stop");
+            Storage.StatusQueue.AddMessage(startMsg);
+
+            return "Stopped crawling.";
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string checkLastTen()
+        {
+            string o = "";
+            List<string> copyQueue = Storage.Last10.ToList<string>();
+            foreach(string s in copyQueue)
+            {
+                o += s + ", ";
+            }
+            return o;
+        }
     }
 }

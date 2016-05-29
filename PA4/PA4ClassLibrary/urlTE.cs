@@ -7,14 +7,20 @@ using System.Threading.Tasks;
 
 namespace PA4ClassLibrary
 {
-    class urlTE : TableEntity
+    public class urlTE : TableEntity
     {
-        public urlTE(string term, string url)
+        public urlTE(string term, string url, string fullTitle, string date)
         {
             this.PartitionKey = term;
             this.RowKey = url;
+
+            this.FullTitle = fullTitle;
+            this.Date = date;
         }
 
         public urlTE() { }
+
+        public string FullTitle { get; set; }
+        public string Date { get; set; }
     }
 }
