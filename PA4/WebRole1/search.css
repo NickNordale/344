@@ -1,4 +1,5 @@
-﻿.ui-autocomplete {
+﻿
+.ui-autocomplete {
     position: absolute;
     z-index: 1000;
     cursor: default;
@@ -25,4 +26,30 @@
 
 .ui-helper-hidden-accessible {
   display: none;
+}
+
+#ad-col {
+    padding: 20px;
+    padding-top: 100px;
+}
+
+#main-col {
+    padding-left: 30px;
+    padding-right: 0;
+}
+
+#page-h2 {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+#amazon {
+    float: right;
+}
+
+.row {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }

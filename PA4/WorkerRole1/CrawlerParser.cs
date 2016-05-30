@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.WindowsAzure.Storage.Queue;
+using PA4ClassLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +9,16 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace PA4ClassLibrary
+namespace WorkerRole1
 {
-    public class WebParser
+    public class CrawlerParser
     {
         public static HashSet<string> crawledUrls = new HashSet<string>();
         public static HashSet<string> crawledXmls = new HashSet<string>();
 
         public static HashSet<string> disallowed;
 
-        public WebParser() { }
+        public CrawlerParser() { }
 
         public void crawlXml(string xmlPassed)
         {

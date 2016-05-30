@@ -53,7 +53,10 @@ namespace WebRole1
             }
             else
             {
-                Dictionary<Tuple<String, String>, int> possibleResults = new Dictionary<Tuple<String, String>, int>();
+                // Want to keep unique list of <url, page title> so that we don't process a site
+                //   multiple time. This key maps to another Tuple respresent rank (int) and page date (DateTime)
+                Dictionary<Tuple<string, string>, Tuple<int, DateTime>> possibleResults = 
+                    new Dictionary<Tuple<string, string>, Tuple<int, DateTime>>();
 
                 char[] arr = tsQuery.ToLower().ToCharArray();
                 arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c)
@@ -85,19 +88,14 @@ namespace WebRole1
                             //int rank = splitTitle.Where(x => queryHashSet.Contains(x)).Count();
                             int rank = splitQuery.Intersect(splitTitle).Count();
 
-                            possibleResults.Add(newKey, rank);
+                            possibleResults.Add(newKey, Tuple.Create(rank, DateTime.Parse(returnedRow.Date)));
                         }
                     }
                 }
 
-                var sortedResults = from entity in possibleResults orderby entity.Value descending select entity;
-
-                List<Tuple<string, string>> top20 = new List<Tuple<string, string>>();
-
-                for (int i = 0; i < 20 && i < sortedResults.Count(); i++)
-                {
-                    top20.Add(sortedResults.ElementAt(i).Key);
-                }
+                List<Tuple<string, string>> top20 = possibleResults.OrderByDescending(x => x.Value.Item1)
+                                                                    .ThenByDescending(x => x.Value.Item2)
+                                                                    .Select(x => x.Key).Take(20).ToList();
 
                 // if cache is full, clear it
                 if (cache.Count >= 100)
@@ -134,21 +132,21 @@ namespace WebRole1
             int totalCount = 0;
             List<string> wikiTitles = new List<string>();
             string wikiPath = System.IO.Path.GetTempPath() + "\\wiki.txt";
-            using (StreamReader sr = new StreamReader(wikiPath))
-            {
-                while (sr.EndOfStream == false)
-                {
-                    string line = sr.ReadLine();
-                    wikiTitles.Add(line);
-                }
-            }
+            wikiTitles = System.IO.File.ReadAllLines(wikiPath).ToList();
+
+            string mbLeft = "";
+
             thisTrie = new Trie();
             foreach (string title in wikiTitles)
             {
-                if (theMemCounter.NextValue() < 50)
+                if (totalCount > 1000000 && (totalCount % 1000 == 0))
                 {
-                    last = title;
-                    break;
+                    if (theMemCounter.NextValue() < 25)
+                    {
+                        mbLeft = theMemCounter.NextValue().ToString();
+                        last = title;
+                        break;
+                    }
                 }
                 thisTrie.addTitle(title);
                 totalCount++;
@@ -157,7 +155,7 @@ namespace WebRole1
             trieSize = totalCount.ToString();
             lastTitle = last;
 
-            return "success";
+            return "total: " + totalCount + ", last: " + last + ", Mem left: " + mbLeft;
         }
 
         [WebMethod]
@@ -206,7 +204,7 @@ namespace WebRole1
             return "Everything cleared.";
         }
 
-        public string getState()
+        private string getState()
         {
             if (Storage.StatusQueue.Exists() && Storage.StatusQueue.PeekMessage() != null)
             {
@@ -218,7 +216,7 @@ namespace WebRole1
             }
         }
 
-        public string getQueueSize()
+        private string getQueueSize()
         {
             if (Storage.UrlQueue.Exists())
             {

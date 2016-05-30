@@ -44,7 +44,7 @@ namespace WorkerRole1
 
             try
             {
-                WebParser webParser = new WebParser();
+                CrawlerParser webParser = new CrawlerParser();
                 CloudQueueMessage statusMsg;
                 while(true)
                 {
@@ -57,7 +57,7 @@ namespace WorkerRole1
                                 //ParseRobots("http://www.cnn.com/robots.txt");
                                 ParseRobots("http://bleacherreport.com/robots.txt");
 
-                                WebParser.disallowed = new HashSet<string>(disallowedLinks);
+                                CrawlerParser.disallowed = new HashSet<string>(disallowedLinks);
 
                                 foreach (string xmlLink in xmlLinks)
                                 {
@@ -122,7 +122,7 @@ namespace WorkerRole1
                         sitesindexed = 0;
                         sizeOfIndex = 0;
 
-                        webParser = new WebParser();
+                        webParser = new CrawlerParser();
 
                         Thread.Sleep(5000);
                     }
