@@ -30,5 +30,13 @@ namespace PA4ClassLibrary
         public int SizeOfIndex { get; set; }
         public string LastTen { get; set; }
         public string Errors { get; set; }
+
+        public string[] LastTenArr { get; set; }
+        public string[] ErrorsArr { get; set; }
+
+        public string State { get; set; }
+        public string QueueSize { get; set; }
+        public string TrieSize { get; set; }
+        public string LastTitle { get; set; }
     }
 }

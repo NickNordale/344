@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin.asmx" />
+    <Content Include="dash.css" />
     <Content Include="dash.html" />
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">

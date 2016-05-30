@@ -24,11 +24,9 @@ namespace WorkerRole1
 
         // CPU
         private PerformanceCounter theCPUCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        //this.theCPUCounter.NextValue();
 
         // RAM
         private PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
-        //this.theMemCounter.NextValue();
 
         private HashSet<string> disallowedLinks = new HashSet<string>();
         private List<string> xmlLinks = new List<string>();
@@ -54,14 +52,17 @@ namespace WorkerRole1
                     {
                         if (statusMsg.AsString == "load")
                         {
-                            //ParseRobots("http://www.cnn.com/robots.txt");
-                            ParseRobots("http://bleacherreport.com/robots.txt");
-
-                            WebParser.disallowed = new HashSet<string>(disallowedLinks);
-
-                            foreach(string xmlLink in xmlLinks)
+                            if (urlsCrawled == 0)
                             {
-                                webParser.crawlXml(xmlLink);
+                                //ParseRobots("http://www.cnn.com/robots.txt");
+                                ParseRobots("http://bleacherreport.com/robots.txt");
+
+                                WebParser.disallowed = new HashSet<string>(disallowedLinks);
+
+                                foreach (string xmlLink in xmlLinks)
+                                {
+                                    webParser.crawlXml(xmlLink);
+                                }
                             }
 
                             Storage.StatusQueue.Clear();
@@ -75,25 +76,27 @@ namespace WorkerRole1
                                 CloudQueueMessage nextUrl = Storage.UrlQueue.GetMessage();
                                 string nextUrlString = nextUrl.AsString;
                                 string[] tableInfo = webParser.crawlHTML(nextUrlString); // { url, title, page date }
-                                urlsCrawled++;
+                                if (tableInfo != null) // Gets rid of repeat urls
+                                {
+                                    urlsCrawled++;
+                                    // Update Last10
+                                    if (Last10.Count == 10)
+                                    {
+                                        Last10.Dequeue();
+                                    }
+                                    Last10.Enqueue(nextUrlString);
 
-                                // Update Last10
-                                if (Last10.Count == 10)
-                                {
-                                    Last10.Dequeue();
-                                }
-                                Last10.Enqueue(nextUrlString);
-
-                                // If webParser.crawlHTML success, add to table
-                                if (tableInfo != null)
-                                {
-                                    addToTable(tableInfo);
-                                    sitesindexed++;
-                                }
-                                // If webParser.crawlHTML error, add to Errors list
-                                else
-                                {
-                                    Errors.Add(nextUrlString);
+                                    // If crawlHTML was successful, add to table
+                                    if (tableInfo[0] != "")
+                                    {
+                                        addToTable(tableInfo);
+                                        sitesindexed++;
+                                    }
+                                    // If crawlHTML failed, add to Errors list
+                                    else
+                                    {
+                                        Errors.Add(nextUrlString);
+                                    }
                                 }
 
                                 Storage.UrlQueue.DeleteMessage(nextUrl);
@@ -102,17 +105,26 @@ namespace WorkerRole1
                         }
                         else if (statusMsg.AsString == "stop")
                         {
-                            Thread.Sleep(20000);
-                            // do stop stuff
-                        }
-                        else if (statusMsg.AsString == "clear")
-                        {
-                            // do clear stuff
+                            Thread.Sleep(2500);
                         }
                     }
                     else
                     {
-                        Thread.Sleep(2000);
+                        // if status queue is cleared, reset the crawler
+
+                        disallowedLinks = new HashSet<string>();
+                        xmlLinks = new List<string>();
+
+                        Last10 = new Queue<string>();
+                        Errors = new List<string>();
+
+                        urlsCrawled = 0;
+                        sitesindexed = 0;
+                        sizeOfIndex = 0;
+
+                        webParser = new WebParser();
+
+                        Thread.Sleep(5000);
                     }
                 }
 
@@ -170,7 +182,7 @@ namespace WorkerRole1
                 {
                     UrlTE newIndex = new UrlTE(keyword, encodedUrl, urlInfo[1], urlInfo[2]);
                     TableOperation insertOperation = TableOperation.InsertOrReplace(newIndex);
-                    Storage.UrlTable.Execute(insertOperation);
+                    Storage.UrlTable.ExecuteAsync(insertOperation);
                     sizeOfIndex++;
                 }
             }
@@ -190,7 +202,7 @@ namespace WorkerRole1
 
             DashTE newStats = new DashTE(cpu, ram, urlsCrawled, sizeOfIndex, last10String, errorsString);
             TableOperation updateStatsOperation = TableOperation.InsertOrReplace(newStats);
-            Storage.StatsTable.Execute(updateStatsOperation);
+            Storage.StatsTable.ExecuteAsync(updateStatsOperation);
         }
 
         private string buildDashTableString(List<string> listIn)

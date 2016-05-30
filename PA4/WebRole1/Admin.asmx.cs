@@ -29,6 +29,9 @@ namespace WebRole1
         public static string blobReturn;
         public static string trieReturn;
 
+        private string trieSize = "";
+        private string lastTitle = "";
+
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string queryTableStorage(string query)
@@ -79,9 +82,7 @@ namespace WebRole1
                 top20.Add(sortedResults.ElementAt(i).Key);
             }
 
-            string ret = jsSerializer.Serialize(top20);
-
-            return ret;
+            return jsSerializer.Serialize(top20);
         }
 
         [WebMethod]
@@ -127,7 +128,10 @@ namespace WebRole1
                 totalCount++;
             }
 
-            return "Last title: " + last + ", Total added: " + totalCount;
+            trieSize = totalCount.ToString();
+            lastTitle = last;
+
+            return "success";
         }
 
         [WebMethod]
@@ -166,30 +170,61 @@ namespace WebRole1
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string getLastTen()
+        public string clearCrawler()
         {
-            DashTE statsRow = ((from entity in Storage.StatsTable.CreateQuery<DashTE>()
-                            where entity.PartitionKey == "dashboard"
-                            && entity.RowKey == "stats"
-                            select entity).Take(1)).First();
+            Storage.StatusQueue.Clear();
+            Storage.UrlQueue.Clear();
+            Storage.UrlTable.DeleteIfExists();
+            Storage.StatsTable.DeleteIfExists();
 
-            string[] lastTenSplit = statsRow.LastTen.Trim().Split(' ');
-            string lastTenJson = jsSerializer.Serialize(lastTenSplit);
-            return lastTenJson;
+            return "Everything cleared.";
+        }
+
+        public string getState()
+        {
+            if (Storage.StatusQueue.Exists() && Storage.StatusQueue.PeekMessage() != null)
+            {
+                return Storage.StatusQueue.PeekMessage().AsString;
+            }
+            else
+            {
+                return "empty";
+            }
+        }
+
+        public string getQueueSize()
+        {
+            if (Storage.UrlQueue.Exists())
+            {
+                Storage.UrlQueue.FetchAttributes();
+                int? count = Storage.UrlQueue.ApproximateMessageCount;
+                return count.ToString();
+            }
+            else
+            {
+                return "0";
+            }
         }
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string checkLastTen()
+        public string getAllStats()
         {
             DashTE statsRow = ((from entity in Storage.StatsTable.CreateQuery<DashTE>()
                                 where entity.PartitionKey == "dashboard"
                                 && entity.RowKey == "stats"
                                 select entity).Take(1)).First();
 
-            string[] errorsSplit = statsRow.Errors.Trim().Split(' ');
-            string errorsJson = jsSerializer.Serialize(errorsSplit);
-            return errorsJson;
+            statsRow.LastTenArr = statsRow.LastTen.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            statsRow.ErrorsArr = statsRow.Errors.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            statsRow.State = getState();
+            statsRow.QueueSize = getQueueSize();
+
+            statsRow.TrieSize = trieSize;
+            statsRow.LastTitle = lastTitle;
+
+            return jsSerializer.Serialize(statsRow);
         }
     }
 }

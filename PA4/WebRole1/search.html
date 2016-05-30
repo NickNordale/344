@@ -23,9 +23,6 @@
 
     <link rel="stylesheet" href="search.css"/>
 
-    <!-- Optional theme -->
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"> -->
-
 </head>
 <body>
 
@@ -64,7 +61,6 @@
             </div>
             <div id="wiki-results">
                 <table class="table table-hover" id="wiki-table">
-                    <thead id="wiki-thead"></thead>
                     <tbody id="wiki-tbody"></tbody>
                 </table>
             </div>
@@ -78,7 +74,6 @@
             </div>
             <div id="crawler-results">
                 <table class="table" id="crawler-table">
-                    <thead id="crawler-thead"></thead>
                     <tbody id="crawler-tbody"></tbody>
                 </table>
             </div>
@@ -161,7 +156,7 @@
                     }
                 },
                 error: function () {
-                    alert("Error");
+                    console.log("Error");
                 }
             });
         }
@@ -182,7 +177,7 @@
                     }
                 },
                 error: function () {
-                    alert("Error");
+                    console.log("Error");
                 }
             });
         }
@@ -214,7 +209,7 @@
                     autoC(possibleArray);
                 },
                 error: function () {
-                    alert("error");
+                    console.log("error");
                 }
             });
         });
@@ -236,18 +231,50 @@
                 dataType: "json",
                 success: function (data) {
                     //console.log(data.d);
-                    var possibleArray = $.parseJSON(data.d);
-                    console.log(possibleArray);
-                    $.each(possibleArray, function (index, value) {
-                        $("#wiki-tbody").append("<tr><td>" + value + "</td></tr>");
-                    });
+                    var wikiArray = $.parseJSON(data.d);
+                    console.log(wikiArray);
+                    if (wikiArray.length > 0) {
+                        $.each(wikiArray, function (index, value) {
+                            $("#wiki-tbody").append("<tr><td>" + value + "</td></tr>");
+                        });
+                    } else {
+                        $("#wiki-tbody").append('<tr class="danger"><td>No matching wiki articles.</td></tr>');
+                    }
                 },
                 error: function () {
-                    alert("error");
+                    console.log("error");
                 }
             });
         });
     </script> <!-- End wiki script tag -->
+
+    <script> // Crawler script tag
+        $("#crawler-submit").click(function () {
+            $("#crawler-tbody").empty();
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/queryTableStorage",
+                data: "{'query':'" + $("#crawler-search").val() + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var crawlerArray = $.parseJSON(data.d);
+                    console.log(crawlerArray);
+                    if (crawlerArray.length > 0) {
+                        $.each(crawlerArray, function (index, value) {
+                            $("#crawler-tbody").append(
+                                "<tr><td><a href=\"" + value.Item1 + "\">" + value.Item2 + "</a></td></tr>");
+                        });
+                    } else {
+                        $("#crawler-tbody").append('<tr class="danger"><td>No matching webpage titles.</td></tr>');
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+    </script> <!-- End crawler script tag -->
 
 </body>
 </html>

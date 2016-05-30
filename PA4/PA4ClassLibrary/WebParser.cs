@@ -77,7 +77,7 @@ namespace PA4ClassLibrary
                             if (checkLink(absUrl))
                             {
                                 CloudQueueMessage newMessage = new CloudQueueMessage(absUrl);
-                                Storage.UrlQueue.AddMessage(newMessage);
+                                Storage.UrlQueue.AddMessageAsync(newMessage);
                             }
                         }
                     }
@@ -117,15 +117,17 @@ namespace PA4ClassLibrary
                     }
                     return new string[] { crawlPassed, titleString, timeString };
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // If error occurs, crawlHTML will return null and a the error will
+                    // If error occurs, crawlHTML will return an empty array and the error will
                     //   be handled in WorkerRole.cs
-                    return null;
+                    return new string[] { "", "", "" };
                 }
             }
             else
             {
+                // returns null because the url has previously been crawled
+                //   null is returned to distinguish from error return (empty array)
                 return null;
             }
         }
