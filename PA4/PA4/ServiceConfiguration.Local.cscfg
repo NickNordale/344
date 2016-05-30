@@ -4,12 +4,14 @@
     <Instances count="1" />
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="7d23b304-11c0-47d2-867a-ede7f0f103e3" />
     </ConfigurationSettings>
   </Role>
   <Role name="WorkerRole1">
     <Instances count="1" />
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="7d23b304-11c0-47d2-867a-ede7f0f103e3" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

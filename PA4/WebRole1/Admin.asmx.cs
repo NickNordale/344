@@ -32,57 +32,83 @@ namespace WebRole1
         private string trieSize = "";
         private string lastTitle = "";
 
+        private static Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>> cache = 
+            new Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>>();
+
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string queryTableStorage(string query)
+        public string queryTableStorage(string tsQuery)
         {
-            Dictionary<Tuple<String, String>, int> possibleResults = new Dictionary<Tuple<String, String>, int>();
-
-            char[] arr = query.ToLower().ToCharArray();
-            arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c)
-                                  || char.IsWhiteSpace(c))));
-
-            string friendlyQuery = new string(arr);
-            string[] splitQuery = friendlyQuery.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            //HashSet<string> queryHashSet = new HashSet<string>(splitQuery);
-
-            foreach (string queryKeyword in splitQuery)
+            if (cache == null) // if cache is null, create new
             {
-                TableQuery<UrlTE> tableQuery = new TableQuery<UrlTE>().Where(
-                    TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, queryKeyword));
-                foreach(UrlTE returnedRow in Storage.UrlTable.ExecuteQuery(tableQuery))
+                cache = new Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>>();
+            }
+
+            // check if in cache and if cache entry isn't over 10 min old
+            if (cache.ContainsKey(tsQuery) && (cache[tsQuery].Item2 > (DateTime.Now.Subtract(new TimeSpan(0, 10, 0)))))
+            {
+                // update DateTime
+                cache[tsQuery] = Tuple.Create(cache[tsQuery].Item1, DateTime.Now);
+                return jsSerializer.Serialize(cache[tsQuery].Item1);
+            }
+            else
+            {
+                Dictionary<Tuple<String, String>, int> possibleResults = new Dictionary<Tuple<String, String>, int>();
+
+                char[] arr = tsQuery.ToLower().ToCharArray();
+                arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c)
+                                      || char.IsWhiteSpace(c))));
+
+                string friendlyQuery = new string(arr);
+                string[] splitQuery = friendlyQuery.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //HashSet<string> queryHashSet = new HashSet<string>(splitQuery);
+
+                foreach (string queryKeyword in splitQuery)
                 {
-                    string friendlyUrl = Storage.DecodeUrlInKey(returnedRow.RowKey);
-                    var newKey = Tuple.Create(friendlyUrl, returnedRow.FullTitle);
-                    if (!possibleResults.ContainsKey(newKey))
+                    TableQuery<UrlTE> tableQuery = new TableQuery<UrlTE>().Where(
+                        TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, queryKeyword));
+                    foreach (UrlTE returnedRow in Storage.UrlTable.ExecuteQuery(tableQuery))
                     {
-                        char[] titleArr = newKey.Item2.ToLower().ToCharArray();
+                        string friendlyUrl = Storage.DecodeUrlInKey(returnedRow.RowKey);
+                        var newKey = Tuple.Create(friendlyUrl, returnedRow.FullTitle);
+                        if (!possibleResults.ContainsKey(newKey))
+                        {
+                            char[] titleArr = newKey.Item2.ToLower().ToCharArray();
 
-                        titleArr = Array.FindAll<char>(titleArr, (c => (char.IsLetterOrDigit(c)
-                                              || char.IsWhiteSpace(c))));
+                            titleArr = Array.FindAll<char>(titleArr, (c => (char.IsLetterOrDigit(c)
+                                                  || char.IsWhiteSpace(c))));
 
-                        string friendlyTitle = new string(titleArr);
+                            string friendlyTitle = new string(titleArr);
 
-                        string[] splitTitle = friendlyTitle.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        //int rank = splitTitle.Where(x => queryHashSet.Contains(x)).Count();
-                        int rank = splitQuery.Intersect(splitTitle).Count();
+                            string[] splitTitle = friendlyTitle.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            //int rank = splitTitle.Where(x => queryHashSet.Contains(x)).Count();
+                            int rank = splitQuery.Intersect(splitTitle).Count();
 
-                        possibleResults.Add(newKey, rank);
+                            possibleResults.Add(newKey, rank);
+                        }
                     }
                 }
+
+                var sortedResults = from entity in possibleResults orderby entity.Value descending select entity;
+
+                List<Tuple<string, string>> top20 = new List<Tuple<string, string>>();
+
+                for (int i = 0; i < 20 && i < sortedResults.Count(); i++)
+                {
+                    top20.Add(sortedResults.ElementAt(i).Key);
+                }
+
+                // if cache is full, clear it
+                if (cache.Count >= 100)
+                {
+                    cache.Clear();
+                }
+
+                cache[tsQuery] = Tuple.Create(top20, DateTime.Now);
+
+                return jsSerializer.Serialize(top20);
             }
-
-            var sortedResults = from entity in possibleResults orderby entity.Value descending select entity;
-
-            List<Tuple<string, string>> top20 = new List<Tuple<string, string>>();
-
-            for (int i = 0; i < 20 && i < sortedResults.Count() - 1; i++)
-            {
-                top20.Add(sortedResults.ElementAt(i).Key);
-            }
-
-            return jsSerializer.Serialize(top20);
         }
 
         [WebMethod]
@@ -136,14 +162,14 @@ namespace WebRole1
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string searchTrie(string query)
+        public string searchTrie(string trieQuery)
         {
-            if (query.Length == 0)
+            if (trieQuery.Length == 0)
             {
                 return "";
             }
             // query -> lowercase, trim, and replace spaces with underscore
-            return jsSerializer.Serialize(thisTrie.searchForPrefix(query.ToLower().Trim().Replace(" ", "_")));
+            return jsSerializer.Serialize(thisTrie.searchForPrefix(trieQuery.ToLower().Trim().Replace(" ", "_")));
         }
 
         [WebMethod]
