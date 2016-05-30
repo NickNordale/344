@@ -7,14 +7,28 @@ using System.Threading.Tasks;
 
 namespace PA4ClassLibrary
 {
-    class dashTE : TableEntity
+    public class DashTE : TableEntity
     {
-        public dashTE(string cpu, string ram, int urlCount, int tableCount)
+        public DashTE(string cpu, string ram, int urlsCrawled, int sizeOfIndex, string lastTenString, string errorsString)
         {
             this.PartitionKey = "dashboard";
-            this.RowKey = "data";
+            this.RowKey = "stats";
+
+            this.CPU = cpu;
+            this.RAM = ram;
+            this.UrlsCrawled = urlsCrawled;
+            this.SizeOfIndex = sizeOfIndex;
+            this.LastTen = lastTenString;
+            this.Errors = errorsString;
         }
 
-        public dashTE() { }
+        public DashTE() { }
+
+        public string CPU { get; set; }
+        public string RAM { get; set; }
+        public int UrlsCrawled { get; set; }
+        public int SizeOfIndex { get; set; }
+        public string LastTen { get; set; }
+        public string Errors { get; set; }
     }
 }

@@ -15,14 +15,6 @@ using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.IO;
 
-// TODO: Change Table storage to map words in title to URL, instead of the current page URL 
-//       to title/date.For example, if the title is “Microsoft goes IPO” then the key should 
-//       be “microsoft”, “goes”, “ipo” and the value is the<URL, date> pair.This is a simplified inverted index.
-// TODO: Only limit to last X months when parsing sitemap URLs
-// TODO: Fix the crawler for bleacherreport.com.Due to the custom routing issue, we need to upgrade our 
-//       crawler to handle BR.In the sitemap, we only load links in the nba xml. Then in the crawling 
-//       phase -> we only consider links that follow this pattern http://*.bleacherreport.com/articles/*
-
 namespace WorkerRole1
 {
     public class WorkerRole : RoleEntryPoint
@@ -31,21 +23,22 @@ namespace WorkerRole1
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
         // CPU
-        //private PerformanceCounter theCPUCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+        private PerformanceCounter theCPUCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
         //this.theCPUCounter.NextValue();
 
         // RAM
-        //private PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
+        private PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
         //this.theMemCounter.NextValue();
 
         private HashSet<string> disallowedLinks = new HashSet<string>();
         private List<string> xmlLinks = new List<string>();
 
-        private List<string> tempLast10 = new List<string>();
+        public static Queue<string> Last10 = new Queue<string>();
+        public static List<string> Errors = new List<string>();
 
         private int urlsCrawled = 0;
         private int sitesindexed = 0;
-        private int tableSize = 0;
+        private int sizeOfIndex = 0;
 
         public override void Run()
         {
@@ -82,26 +75,34 @@ namespace WorkerRole1
                                 CloudQueueMessage nextUrl = Storage.UrlQueue.GetMessage();
                                 string nextUrlString = nextUrl.AsString;
                                 string[] tableInfo = webParser.crawlHTML(nextUrlString); // { url, title, page date }
+                                urlsCrawled++;
 
                                 // Update Last10
-                                if (Storage.Last10.Count == 10)
+                                if (Last10.Count == 10)
                                 {
-                                    Storage.Last10.Dequeue();
+                                    Last10.Dequeue();
                                 }
-                                Storage.Last10.Enqueue(nextUrlString);
+                                Last10.Enqueue(nextUrlString);
 
+                                // If webParser.crawlHTML success, add to table
                                 if (tableInfo != null)
                                 {
                                     addToTable(tableInfo);
                                     sitesindexed++;
                                 }
+                                // If webParser.crawlHTML error, add to Errors list
+                                else
+                                {
+                                    Errors.Add(nextUrlString);
+                                }
 
                                 Storage.UrlQueue.DeleteMessage(nextUrl);
-                                urlsCrawled++;
+                                updateDashboardStats();
                             }
                         }
                         else if (statusMsg.AsString == "stop")
                         {
+                            Thread.Sleep(20000);
                             // do stop stuff
                         }
                         else if (statusMsg.AsString == "clear")
@@ -151,25 +152,56 @@ namespace WorkerRole1
         {
             // { url, title, page date }
 
-            string encodedUrl = Storage.EncodeUrlInKey(urlInfo[0]);
+            string str = urlInfo[1].ToLower();
+            char[] arr = str.ToCharArray();
 
-            string[] splitTitle = urlInfo[1].Split(' ');
+            arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c)
+                                  || char.IsWhiteSpace(c))));
+
+            string friendlyTitle = new string(arr);
+
+            string[] splitTitle = friendlyTitle.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            string encodedUrl = Storage.EncodeUrlInKey(urlInfo[0]);
 
             try
             {
                 foreach (string keyword in splitTitle)
                 {
-                    //string encodedKeyword = pa4Storage.EncodeUrlInKey(keyword);
-                    urlTE newIndex = new urlTE(keyword, encodedUrl, urlInfo[1], urlInfo[2]);
+                    UrlTE newIndex = new UrlTE(keyword, encodedUrl, urlInfo[1], urlInfo[2]);
                     TableOperation insertOperation = TableOperation.InsertOrReplace(newIndex);
                     Storage.UrlTable.Execute(insertOperation);
-                    tableSize++;
+                    sizeOfIndex++;
                 }
             }
             catch
             {
-                Storage.Errors.Add(urlInfo[0]);
+                Errors.Add(urlInfo[0]);
             }
+        }
+
+        public void updateDashboardStats()
+        {
+            string cpu = theCPUCounter.NextValue().ToString();
+            string ram = theMemCounter.NextValue().ToString();
+
+            string last10String = buildDashTableString(Last10.ToList<string>()).Trim();
+            string errorsString = buildDashTableString(Errors).Trim();
+
+            DashTE newStats = new DashTE(cpu, ram, urlsCrawled, sizeOfIndex, last10String, errorsString);
+            TableOperation updateStatsOperation = TableOperation.InsertOrReplace(newStats);
+            Storage.StatsTable.Execute(updateStatsOperation);
+        }
+
+        private string buildDashTableString(List<string> listIn)
+        {
+            string buildReturn = "";
+            foreach(string url in listIn)
+            {
+                buildReturn += url + " ";
+            }
+
+            return buildReturn;
         }
 
         public override bool OnStart()

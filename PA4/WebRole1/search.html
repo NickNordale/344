@@ -3,68 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Stats</title>
-
+    <title>Search Page</title>
+    
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    
+    <!--
+        smoothness: white to grey on hover
+        cupertino: white to light blue on hover
+        eggplant: purpley theme
+        overcast: grey to white on hover
+        vader: black to white on hover
+    -->
+    <!-- jQuery UI Stylesheet (for autocomplete) -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
-    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="search.css"/>
+
+    <!-- Optional theme -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"> -->
+
 </head>
 <body>
 
-    <input type="text" name="pa2" placeholder="check the query suggestion" id="wiki-search" />
+    <div class="container">
+        <div class="row" id="nba-row">
+            <div class="input-group">
+                <input type="text" class="form-control" id="nba-search" placeholder="search nba players">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="nba-submit">Search</button>
+                </span>
+            </div>
+            <div id="nba-results">
+                <table class="table" id="nba-table">
+                    <thead id="nba-thead"></thead>
+                    <tbody id="nba-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row" id="wiki-row">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" id="download-wiki">
+                    Download wiki <i class="fa-li fa fa-spinner fa-spin" id="dw-spinner"></i>
+                </button>
+                <button type="button" class="btn btn-default" id="build-trie">
+                    Build trie <i class="fa-li fa fa-spinner fa-spin" id="bt-spinner"></i>
+                </button>
+                <button type="button" class="btn btn-default" id="download-build">
+                    Download wiki, then build trie <i class="fa-li fa fa-spinner fa-spin" id="db-spinner"></i>
+                </button>
+            </div>
+            <div class="input-group">
+                <input type="text" class="form-control" id="wiki-search" name="query" placeholder="search wiki titles">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="wiki-submit">Search</button>
+                </span>
+            </div>
+            <div id="wiki-results">
+                <table class="table table-hover" id="wiki-table">
+                    <thead id="wiki-thead"></thead>
+                    <tbody id="wiki-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row" id="crawler-row">
+            <div class="input-group">
+                <input type="text" class="form-control" id="crawler-search" placeholder="search webpage titles">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="crawler-submit">Search</button>
+                </span>
+            </div>
+            <div id="crawler-results">
+                <table class="table" id="crawler-table">
+                    <thead id="crawler-thead"></thead>
+                    <tbody id="crawler-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#wiki-search").keyup(function () {
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
+    
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script> // NBA script tag
+        $("#nba-search").keyup(function () {
+            var q = $("#nba-search").val();
+            if ($("#nba-search").val() == "") {
+                $("#nba-thead").empty();
+                $("#nba-tbody").empty();
+            } else {
                 $.ajax({
-                    type: "POST",
-                    url: "admin.asmx/searchTrie",
-                    data: "{'query':'" + $("#wiki-search").val() + "'}",
+                    crossDomain: true,
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (data) {
-                        var possibleArray = $.parseJSON(data.d);
-                        console.log(possibleArray);
-                        autoC(possibleArray);
-                    },
-                    error: function () {
-                        alert("error");
-                    }
-                });
-            });
-            function autoC(ting) {
-                $("#wiki-search").autocomplete({
-                    minLength: 1,
-                    source: ting
+                    url: "http://ec2-52-39-70-58.us-west-2.compute.amazonaws.com/pa1.php",
+                    data: { name: q },
+                    dataType: "jsonp",
+                    jsonp: 'callback',
+                    jsonpCallback: 'jsonpCB'
                 });
             }
         });
-    </script>
 
-    <input type="text" id="player-name" placeholder="player name">
-    <button class="btn btn-primary" id="nba-submit">Go</button>
+        function jsonpCB(data) {
+            $("#nba-tbody").empty();
+            if (data != false) {
+                buildTable(data);
+            } else {
+                $("#nba-thead").empty();
+                console.log("current query: " + $("#nba-search").val());
+                if ($("#nba-search").val() != "") {
+                    $("#nba-tbody").append('<tr class="danger"><td>No matching players.</td></tr>');
+                }
+            }
+        }
 
-    <script>
-        $("#nba-submit").click(function () {
-            console.log("click!");
-            var q = $("#player-name").val();
-            console.log("input: " + q);
+        function buildTable(data) {
+            var headerString = '<tr>';
+            var bodyString = '<tr>';
+            $.each(data, function (key, value) {
+                headerString += '<td>' + key + '</td>';
+                bodyString += '<td>' + value + '</td>';
+            });
+            headerString += '</tr>';
+            bodyString += '</tr>';
+            $("#nba-thead").append(headerString);
+            $("#nba-tbody").append(bodyString);
+        }
+    </script> <!-- End NBA script tag -->
+
+    <script> // Wiki script tag
+        $(document).ready(function () {
+            $("#dw-spinner").hide();
+            $("#bt-spinner").hide();
+            $("#db-spinner").hide();
+        });
+
+        function downloadWiki(alsoBuild) {
+            $("#dw-spinner").show();
             $.ajax({
-                crossDomain: true,
+                type: "POST",
+                url: "admin.asmx/downloadWiki",
                 contentType: "application/json; charset=utf-8",
-                url: "http://ec2-52-39-70-58.us-west-2.compute.amazonaws.com/pa1.php",
-                data: { name: q },
-                dataType: "jsonp",
-                jsonp: 'callback',
-                jsonpCallback: 'jsonpCB'
+                success: function (data) {
+                    $("#download-wiki").addClass("btn-success");
+                    $("#dw-spinner").hide();
+                    if (alsoBuild) {
+                        buildTrie(true);
+                    }
+                },
+                error: function () {
+                    alert("Error");
+                }
+            });
+        }
+
+        function buildTrie(fromBoth) {
+            $("#bt-spinner").show();
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/buildTrie",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data.d);
+                    $("#build-trie").addClass("btn-success");
+                    $("#bt-spinner").hide();
+                    if (fromBoth) {
+                        $("#download-build").addClass("btn-success");
+                        $("#db-spinner").hide();
+                    }
+                },
+                error: function () {
+                    alert("Error");
+                }
+            });
+        }
+
+        $("#download-wiki").click(function () {
+            downloadWiki(false);
+        });
+
+        $("#build-trie").click(function () {
+            buildTrie(false);
+        });
+
+        $("#download-build").click(function () {
+            $("#db-spinner").show();
+            downloadWiki(true);
+        });
+
+        /*$("#wiki-search").keyup(function () {
+            $("#wiki-tbody").empty();
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/searchTrie",
+                data: "{'query':'" + $("#wiki-search").val() + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var possibleArray = $.parseJSON(data.d);
+                    console.log(possibleArray);
+                    autoC(possibleArray);
+                },
+                error: function () {
+                    alert("error");
+                }
             });
         });
 
-        function jsonpCB(data) {
-            console.log(data);
-        }
-    </script>
+        function autoC(arrIn) {
+            $("#wiki-search").autocomplete({
+                minLength: 1,
+                source: arrIn
+            });
+        }*/
+
+        $("#wiki-submit").click(function () {
+            $("#wiki-tbody").empty();
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/searchTrie",
+                data: "{'query':'" + $("#wiki-search").val() + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    //console.log(data.d);
+                    var possibleArray = $.parseJSON(data.d);
+                    console.log(possibleArray);
+                    $.each(possibleArray, function (index, value) {
+                        $("#wiki-tbody").append("<tr><td>" + value + "</td></tr>");
+                    });
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+    </script> <!-- End wiki script tag -->
 
 </body>
 </html>

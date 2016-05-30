@@ -9,7 +9,7 @@ namespace WebRole1
     public class Trie
     {
         public Node root;
-        public List<string> outT;
+        public List<string> results;
 
         public Trie()
         {
@@ -30,7 +30,7 @@ namespace WebRole1
             curr.isLeaf = true;
         }
 
-        public string searchForPrefix(string query)
+        public List<string> searchForPrefix(string query)
         {
             Node curr = root;
             for (int i = 0; i < query.Length; i++)
@@ -41,25 +41,28 @@ namespace WebRole1
                 }
                 else
                 {
-                    return "";
+                    return new List<string>();
                 }
             }
 
-            outT = new List<string>();
+            results = new List<string>();
             searchHelp(curr, query);
 
-            JavaScriptSerializer ts = new JavaScriptSerializer();
+            return results;
 
-            return ts.Serialize(outT);
+            // OLD: Was returning serialized list, now just returning 
+            //   list - serialize in admin.asmx
+            //JavaScriptSerializer ts = new JavaScriptSerializer();
+            //return ts.Serialize(outT);
         }
 
         private void searchHelp(Node curr, string currString)
         {
-            if (outT.Count < 10)
+            if (results.Count < 10)
             {
                 if (curr.isLeaf)
                 {
-                    outT.Add(currString);
+                    results.Add(currString.Replace("_", " "));
                 }
 
                 if (curr.children.Count > 0)

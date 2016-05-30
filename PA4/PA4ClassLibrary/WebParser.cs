@@ -119,7 +119,8 @@ namespace PA4ClassLibrary
                 }
                 catch
                 {
-                    Storage.Errors.Add(crawlPassed);
+                    // If error occurs, crawlHTML will return null and a the error will
+                    //   be handled in WorkerRole.cs
                     return null;
                 }
             }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace PA4ClassLibrary
 {
-    public class urlTE : TableEntity
+    public class UrlTE : TableEntity
     {
-        public urlTE(string term, string url, string fullTitle, string date)
+        public UrlTE(string term, string url, string fullTitle, string date)
         {
             this.PartitionKey = term;
             this.RowKey = url;
@@ -18,7 +18,7 @@ namespace PA4ClassLibrary
             this.Date = date;
         }
 
-        public urlTE() { }
+        public UrlTE() { }
 
         public string FullTitle { get; set; }
         public string Date { get; set; }

@@ -42,9 +42,6 @@ namespace PA4ClassLibrary
         public static CloudBlobContainer container = blobClient.GetContainerReference("pa2");
         public static CloudBlockBlob BlockBlob = container.GetBlockBlobReference("ValidTitles_lowercase_nodigits.txt");
 
-        public static Queue<string> Last10 = new Queue<string>();
-        public static List<string> Errors = new List<string>();
-
         static Storage()
         {
             UrlTable.CreateIfNotExists();

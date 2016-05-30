@@ -86,10 +86,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="dashTE.cs" />
+    <Compile Include="DashTE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storage.cs" />
-    <Compile Include="urlTE.cs" />
+    <Compile Include="UrlTE.cs" />
     <Compile Include="WebParser.cs" />
   </ItemGroup>
   <ItemGroup>

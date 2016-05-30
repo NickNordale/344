@@ -15,14 +15,6 @@ using System.Web.Script.Services;
 using System.Web.Services;
 using PA4ClassLibrary;
 
-// TODO: Query PA1 API for NBA players
-// TODO: Query table storage for words in website titles
-// TODO: Add code to rank results (LINQ statement)
-// TODO: Add query suggestion admin stats to Dashboard (#titles & last title)
-
-// TODO: (Fix) Memory handling in PA2 code
-// TODO: (Fix) OOP Trie in PA2 code (private root node)
-
 namespace WebRole1
 {
     [WebService(Namespace = "http://tempuri.org/")]
@@ -31,30 +23,70 @@ namespace WebRole1
     [System.Web.Script.Services.ScriptService]
     public class Admin : System.Web.Services.WebService
     {
-        // CPU
-        //private PerformanceCounter theCPUCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        //this.theCPUCounter.NextValue();
-
-        // RAM
-        //private PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
-        //this.theMemCounter.NextValue();
+        private JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
 
         public static Trie thisTrie;
         public static string blobReturn;
         public static string trieReturn;
 
-        // No webmethod to facilitate NBA PA1 request right?
-
-        /*[WebMethod]
+        [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string queryTableStorage()
+        public string queryTableStorage(string query)
         {
-            return "";
-        }*/
+            Dictionary<Tuple<String, String>, int> possibleResults = new Dictionary<Tuple<String, String>, int>();
+
+            char[] arr = query.ToLower().ToCharArray();
+            arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c)
+                                  || char.IsWhiteSpace(c))));
+
+            string friendlyQuery = new string(arr);
+            string[] splitQuery = friendlyQuery.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            //HashSet<string> queryHashSet = new HashSet<string>(splitQuery);
+
+            foreach (string queryKeyword in splitQuery)
+            {
+                TableQuery<UrlTE> tableQuery = new TableQuery<UrlTE>().Where(
+                    TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, queryKeyword));
+                foreach(UrlTE returnedRow in Storage.UrlTable.ExecuteQuery(tableQuery))
+                {
+                    string friendlyUrl = Storage.DecodeUrlInKey(returnedRow.RowKey);
+                    var newKey = Tuple.Create(friendlyUrl, returnedRow.FullTitle);
+                    if (!possibleResults.ContainsKey(newKey))
+                    {
+                        char[] titleArr = newKey.Item2.ToLower().ToCharArray();
+
+                        titleArr = Array.FindAll<char>(titleArr, (c => (char.IsLetterOrDigit(c)
+                                              || char.IsWhiteSpace(c))));
+
+                        string friendlyTitle = new string(titleArr);
+
+                        string[] splitTitle = friendlyTitle.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        //int rank = splitTitle.Where(x => queryHashSet.Contains(x)).Count();
+                        int rank = splitQuery.Intersect(splitTitle).Count();
+
+                        possibleResults.Add(newKey, rank);
+                    }
+                }
+            }
+
+            var sortedResults = from entity in possibleResults orderby entity.Value descending select entity;
+
+            List<Tuple<string, string>> top20 = new List<Tuple<string, string>>();
+
+            for (int i = 0; i < 20 && i < sortedResults.Count() - 1; i++)
+            {
+                top20.Add(sortedResults.ElementAt(i).Key);
+            }
+
+            string ret = jsSerializer.Serialize(top20);
+
+            return ret;
+        }
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string downloadwiki()
+        public string downloadWiki()
         {
             string filePath = Path.GetTempPath() + "\\wiki.txt";
             using (var fileStream = File.OpenWrite(filePath))
@@ -106,7 +138,8 @@ namespace WebRole1
             {
                 return "";
             }
-            return thisTrie.searchForPrefix(query);
+            // query -> lowercase, trim, and replace spaces with underscore
+            return jsSerializer.Serialize(thisTrie.searchForPrefix(query.ToLower().Trim().Replace(" ", "_")));
         }
 
         [WebMethod]
@@ -125,23 +158,38 @@ namespace WebRole1
         public string stopCrawling()
         {
             Storage.StatusQueue.Clear();
-            CloudQueueMessage startMsg = new CloudQueueMessage("stop");
-            Storage.StatusQueue.AddMessage(startMsg);
+            CloudQueueMessage stopMsg = new CloudQueueMessage("stop");
+            Storage.StatusQueue.AddMessage(stopMsg);
 
             return "Stopped crawling.";
         }
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string getLastTen()
+        {
+            DashTE statsRow = ((from entity in Storage.StatsTable.CreateQuery<DashTE>()
+                            where entity.PartitionKey == "dashboard"
+                            && entity.RowKey == "stats"
+                            select entity).Take(1)).First();
+
+            string[] lastTenSplit = statsRow.LastTen.Trim().Split(' ');
+            string lastTenJson = jsSerializer.Serialize(lastTenSplit);
+            return lastTenJson;
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string checkLastTen()
         {
-            string o = "";
-            List<string> copyQueue = Storage.Last10.ToList<string>();
-            foreach(string s in copyQueue)
-            {
-                o += s + ", ";
-            }
-            return o;
+            DashTE statsRow = ((from entity in Storage.StatsTable.CreateQuery<DashTE>()
+                                where entity.PartitionKey == "dashboard"
+                                && entity.RowKey == "stats"
+                                select entity).Take(1)).First();
+
+            string[] errorsSplit = statsRow.Errors.Trim().Split(' ');
+            string errorsJson = jsSerializer.Serialize(errorsSplit);
+            return errorsJson;
         }
     }
 }
