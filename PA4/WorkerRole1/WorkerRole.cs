@@ -107,24 +107,28 @@ namespace WorkerRole1
                         {
                             Thread.Sleep(2500);
                         }
+                        else if (statusMsg.AsString == "clear")
+                        {
+                            Storage.UrlQueue.DeleteIfExists();
+                            Storage.UrlTable.DeleteIfExists();
+                            Storage.StatsTable.DeleteIfExists();
+
+                            disallowedLinks = new HashSet<string>();
+                            xmlLinks = new List<string>();
+
+                            Last10 = new Queue<string>();
+                            Errors = new List<string>();
+
+                            urlsCrawled = 0;
+                            sitesindexed = 0;
+                            sizeOfIndex = 0;
+
+                            webParser = new CrawlerParser();
+                        }
                     }
                     else
                     {
-                        // if status queue is cleared, reset the crawler
-
-                        disallowedLinks = new HashSet<string>();
-                        xmlLinks = new List<string>();
-
-                        Last10 = new Queue<string>();
-                        Errors = new List<string>();
-
-                        urlsCrawled = 0;
-                        sitesindexed = 0;
-                        sizeOfIndex = 0;
-
-                        webParser = new CrawlerParser();
-
-                        Thread.Sleep(5000);
+                        Thread.Sleep(2500);
                     }
                 }
 

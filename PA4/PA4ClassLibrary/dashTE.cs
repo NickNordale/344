@@ -34,8 +34,6 @@ namespace PA4ClassLibrary
         public string[] LastTenArr { get; set; }
         public string[] ErrorsArr { get; set; }
 
-        public string State { get; set; }
-        public string QueueSize { get; set; }
         public string TrieSize { get; set; }
         public string LastTitle { get; set; }
     }

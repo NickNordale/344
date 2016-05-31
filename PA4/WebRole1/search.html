@@ -18,6 +18,12 @@
 
     <div class="col-sm-10" id="main-col">
 
+        <div class="row" id="buttons-row">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" id="db-button">Download wiki, then build trie</button>
+            </div>
+        </div>
+
         <div class="row" id="search-row">
             <h2 id="page-h2">Search for stuff</h2>
             <div class="input-group">
@@ -139,7 +145,7 @@
                 url: "admin.asmx/buildTrie",
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
-                    $("#download-build").addClass("btn-success");
+                    $("#db-button").addClass("btn-success");
                 },
                 error: function () {
                     console.log("Error");
@@ -147,7 +153,7 @@
             });
         }
 
-        $("#download-build").click(function () {
+        $("#db-button").click(function () {
             downloadWiki();
         });
 
@@ -205,7 +211,7 @@
         $("#full-submit").click(function () {
             var query = $("#full-search").val();
             queryNBA(query);
-            //queryWiki(query);
+            queryWiki(query);
             queryCrawler(query);
         });
 

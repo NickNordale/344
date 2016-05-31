@@ -29,8 +29,8 @@ namespace WebRole1
         public static string blobReturn;
         public static string trieReturn;
 
-        private string trieSize = "";
-        private string lastTitle = "";
+        private static string trieSize;
+        private static string lastTitle;
 
         private static Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>> cache = 
             new Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>>();
@@ -197,26 +197,33 @@ namespace WebRole1
         public string clearCrawler()
         {
             Storage.StatusQueue.Clear();
-            Storage.UrlQueue.Clear();
-            Storage.UrlTable.DeleteIfExists();
-            Storage.StatsTable.DeleteIfExists();
+            CloudQueueMessage clearMsg = new CloudQueueMessage("clear");
+            Storage.StatusQueue.AddMessage(clearMsg);
 
-            return "Everything cleared.";
+            return "Clearing...";
         }
 
-        private string getState()
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string getState()
         {
-            if (Storage.StatusQueue.Exists() && Storage.StatusQueue.PeekMessage() != null)
+            string stateOut = "";
+
+            if (Storage.StatusQueue != null && Storage.StatusQueue.PeekMessage() != null)
             {
-                return Storage.StatusQueue.PeekMessage().AsString;
+                stateOut = Storage.StatusQueue.PeekMessage().AsString;
             }
             else
             {
-                return "empty";
+                stateOut = "idle";
             }
+
+            return stateOut;
         }
 
-        private string getQueueSize()
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string getQueueSize()
         {
             if (Storage.UrlQueue.Exists())
             {
@@ -234,21 +241,28 @@ namespace WebRole1
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string getAllStats()
         {
-            DashTE statsRow = ((from entity in Storage.StatsTable.CreateQuery<DashTE>()
-                                where entity.PartitionKey == "dashboard"
-                                && entity.RowKey == "stats"
-                                select entity).Take(1)).First();
 
-            statsRow.LastTenArr = statsRow.LastTen.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            statsRow.ErrorsArr = statsRow.Errors.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var statsList = (from entity in Storage.StatsTable.CreateQuery<DashTE>()
+                                  where entity.PartitionKey == "dashboard"
+                                  && entity.RowKey == "stats"
+                                  select entity).ToList();
 
-            statsRow.State = getState();
-            statsRow.QueueSize = getQueueSize();
+            if (statsList.Count() != 0)
+            {
+                DashTE statsRow = statsList.First();
 
-            statsRow.TrieSize = trieSize;
-            statsRow.LastTitle = lastTitle;
+                statsRow.LastTenArr = statsRow.LastTen.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                statsRow.ErrorsArr = statsRow.Errors.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            return jsSerializer.Serialize(statsRow);
+                if (trieSize != null) { statsRow.TrieSize = trieSize; }
+                if (lastTitle != null) { statsRow.LastTitle = lastTitle; }
+
+                return jsSerializer.Serialize(statsRow);
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }

@@ -65,7 +65,7 @@
         <div class="row" id="lists-row">
 
             <div class="col-sm-6" id="last10-col">
-                <h4 class="text-primary">Last 10 URL's Crawled</h4>
+                <h4 class="text-primary">Recent URL's Crawled</h4>
                 <table class="table table-striped" id="last10-table">
                     <tbody id="last10-tbody"></tbody>
                 </table>
@@ -90,60 +90,86 @@
     <script>
         $(function () {
             hideAllLabels();
-            setInterval(function () {
-                getData(false)
-            }, 10000);
+            setInterval(function() { getState(); }, 10000);
+            setInterval(function() { getQueueSize(); }, 5000);
+            setInterval(function() { getData(); }, 10000);
         });
 
-        function getData(init) {
+        function getState() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getState",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    showState(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
+        function getQueueSize() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getQueueSize",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#queue-span").text(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
+        function getData() {
             $.ajax({
                 type: "POST",
                 url: "admin.asmx/getAllStats",
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
-                    var dashArray = $.parseJSON(data.d);
-                    console.log(init);
-                    console.log(dashArray);
+                    if (data.d != "") {
+                        var dashArray = $.parseJSON(data.d);
+                        console.log(dashArray);
 
-                    showState(dashArray.State);
+                        $("#cpu-span").text(dashArray.CPU);
+                        $("#ram-span").text(dashArray.RAM);
+                        $("#table-span").text(dashArray.SizeOfIndex);
 
-                    $("#cpu-span").text(dashArray.CPU);
-                    $("#ram-span").text(dashArray.RAM);
-                    $("#table-span").text(dashArray.SizeOfIndex);
-                    $("#queue-span").text(dashArray.QueueSize);
+                        if (dashArray.TrieSize != null) {
+                            $("#trie-size-span").removeClass("text-danger");
+                            $("#trie-size-span").text(dashArray.TrieSize);
+                        } else {
+                            $("#trie-size-span").text("Trie hasn't been built yet.");
+                            $("#trie-size-span").addClass("text-danger");
+                        }
 
-                    if (dashArray.TrieSize != "") {
-                        $("#trie-size-span").removeClass("text-danger");
-                        $("#trie-size-span").text(dashArray.TrieSize);
-                    } else {
-                        $("#trie-size-span").text("Trie hasn't been built yet.");
-                        $("#trie-size-span").addClass("text-danger");
-                    }
+                        if (dashArray.LastTitle != null) {
+                            $("#last-title-span").removeClass("text-danger");
+                            $("#last-title-span").text(dashArray.LastTitle);
+                        } else {
+                            $("#last-title-span").text("Trie hasn't been built yet.");
+                            $("#last-title-span").addClass("text-danger");
+                        }
 
-                    if (dashArray.LastTitle != "") {
-                        $("#trie-size-span").removeClass("text-danger");
-                        $("#last-title-span").text(dashArray.LastTitle);
-                    } else {
-                        $("#last-title-span").text("Trie hasn't been built yet.");
-                        $("#last-title-span").addClass("text-danger");
-                    }
+                        $("#last10-tbody").empty();
+                        if (dashArray.LastTenArr.length > 0) {
+                            $.each(dashArray.LastTenArr, function (index, value) {
+                                $("#last10-tbody").append("<tr><td>" + value + "</td></tr>");
+                            });
+                        } else {
+                            $("#last10-tbody").append('<tr><td>Haven\'t crawled any pages yet.</td></tr>');
+                        }
 
-                    $("#last10-tbody").empty();
-                    if (dashArray.LastTenArr.length > 0) {
-                        $.each(dashArray.LastTenArr, function (index, value) {
-                            $("#last10-tbody").append("<tr><td>" + value + "</td></tr>");
-                        });
-                    } else {
-                        $("#last10-tbody").append('<tr><td>Haven\'t crawled any pages yet.</td></tr>');
-                    }
-
-                    $("#errors-tbody").empty();
-                    if (dashArray.ErrorsArr.length > 0) {
-                        $.each(dashArray.ErrorsArr, function (index, value) {
-                            $("#errors-tbody").append("<tr><td>" + value + "</td></tr>");
-                        });
-                    } else {
-                        $("#errors-tbody").append('<tr class="success"><td>No errors yet.</td></tr>');
+                        $("#errors-tbody").empty();
+                        if (dashArray.ErrorsArr.length > 0) {
+                            $.each(dashArray.ErrorsArr, function (index, value) {
+                                $("#errors-tbody").append("<tr><td>" + value + "</td></tr>");
+                            });
+                        } else {
+                            $("#errors-tbody").append('<tr class="success"><td>No errors yet.</td></tr>');
+                        }
                     }
                 },
                 error: function () {
@@ -160,7 +186,7 @@
                 $("#crawling-label").show();
             } else if (state == "stop") {
                 $("#stopped-label").show();
-            } else if (state == "empty") {
+            } else if (state == "clear") {
                 $("#cleared-label").show();
             }
         }
