@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using PA4ClassLibrary;
+using ClassLibrary;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -46,7 +46,7 @@ namespace WorkerRole1
             {
                 CrawlerParser webParser = new CrawlerParser();
                 CloudQueueMessage statusMsg;
-                while(true)
+                while (true)
                 {
                     if ((statusMsg = Storage.StatusQueue.PeekMessage()) != null)
                     {
@@ -102,7 +102,7 @@ namespace WorkerRole1
                                 Storage.UrlQueue.DeleteMessage(nextUrl);
 
                                 // update the dashboard stats every 5th url crawled
-                                if(urlsCrawled % 5 == 0)
+                                if (urlsCrawled % 5 == 0)
                                 {
                                     updateDashboardStats();
                                 }
@@ -155,7 +155,7 @@ namespace WorkerRole1
             while ((line = sr.ReadLine()) != null)
             {
                 // XOR filters out BR sitemaps w/o "nba"
-                if (line.StartsWith("Sitemap") && line.EndsWith(".xml") 
+                if (line.StartsWith("Sitemap") && line.EndsWith(".xml")
                     ^ (line.Contains("bleacherreport") && !line.Contains("nba")))
                 {
                     string smUrl = line.Substring(line.IndexOf("http"));
@@ -217,7 +217,7 @@ namespace WorkerRole1
         private string buildDashTableString(List<string> listIn)
         {
             string buildReturn = "";
-            foreach(string url in listIn)
+            foreach (string url in listIn)
             {
                 buildReturn += url + " ";
             }

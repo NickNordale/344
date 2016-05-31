@@ -13,7 +13,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Script.Services;
 using System.Web.Services;
-using PA4ClassLibrary;
+using ClassLibrary;
 
 namespace WebRole1
 {
@@ -32,7 +32,7 @@ namespace WebRole1
         private static string trieSize;
         private static string lastTitle;
 
-        private static Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>> cache = 
+        private static Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>> cache =
             new Dictionary<string, Tuple<List<Tuple<string, string>>, DateTime>>();
 
         [WebMethod]
@@ -55,7 +55,7 @@ namespace WebRole1
             {
                 // Want to keep unique list of <url, page title> so that we don't process a site
                 //   multiple time. This key maps to another Tuple respresent rank (int) and page date (DateTime)
-                Dictionary<Tuple<string, string>, Tuple<int, DateTime>> possibleResults = 
+                Dictionary<Tuple<string, string>, Tuple<int, DateTime>> possibleResults =
                     new Dictionary<Tuple<string, string>, Tuple<int, DateTime>>();
 
                 char[] arr = tsQuery.ToLower().ToCharArray();
@@ -132,22 +132,18 @@ namespace WebRole1
             int totalCount = 0;
             List<string> wikiTitles = new List<string>();
             string wikiPath = System.IO.Path.GetTempPath() + "\\wiki.txt";
-            using (StreamReader sr = new StreamReader(wikiPath))
-            {
-                while (sr.EndOfStream == false)
-                {
-                    string line = sr.ReadLine();
-                    wikiTitles.Add(line);
-                }
-            }
+            wikiTitles = System.IO.File.ReadAllLines(wikiPath).ToList();
+
+            string mbLeft = "";
 
             thisTrie = new Trie();
             foreach (string title in wikiTitles)
             {
-                if (totalCount > 1000000 && (totalCount % 5000 == 0))
+                if (totalCount > 1000000 && (totalCount % 1000 == 0))
                 {
-                    if (theMemCounter.NextValue() < 50)
+                    if (theMemCounter.NextValue() < 25)
                     {
+                        mbLeft = theMemCounter.NextValue().ToString();
                         last = title;
                         break;
                     }
@@ -159,7 +155,7 @@ namespace WebRole1
             trieSize = totalCount.ToString();
             lastTitle = last;
 
-            return "total: " + totalCount + ", last: " + last;
+            return "total: " + totalCount + ", last: " + last + ", Mem left: " + mbLeft;
         }
 
         [WebMethod]
@@ -261,9 +257,9 @@ namespace WebRole1
         {
 
             var statsList = (from entity in Storage.StatsTable.CreateQuery<DashTE>()
-                                  where entity.PartitionKey == "dashboard"
-                                  && entity.RowKey == "stats"
-                                  select entity).ToList();
+                             where entity.PartitionKey == "dashboard"
+                             && entity.RowKey == "stats"
+                             select entity).ToList();
 
             if (statsList.Count() != 0)
             {

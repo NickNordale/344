@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PA4ClassLibrary
+namespace ClassLibrary
 {
     public class DashTE : TableEntity
     {

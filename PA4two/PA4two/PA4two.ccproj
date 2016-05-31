@@ -5,13 +5,13 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>2.9</ProductVersion>
-    <ProjectGuid>b9c77fe2-00eb-402c-ad38-a56488bf3c53</ProjectGuid>
+    <ProjectGuid>78723d9d-2d42-413c-b8f6-0370f748633d</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PA4</RootNamespace>
-    <AssemblyName>PA4</AssemblyName>
+    <RootNamespace>PA4two</RootNamespace>
+    <AssemblyName>PA4two</AssemblyName>
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
-    <Name>PA4</Name>
+    <Name>PA4two</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,7 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WebRole1\WebRole1.csproj">
       <Name>WebRole1</Name>
-      <Project>{3cad04bc-5ca8-4d14-8ee8-2849a055180f}</Project>
+      <Project>{62f7eb69-fe85-45c8-9ea1-a2e93b48037d}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
       <RoleName>WebRole1</RoleName>
@@ -47,7 +47,7 @@
     </ProjectReference>
     <ProjectReference Include="..\WorkerRole1\WorkerRole1.csproj">
       <Name>WorkerRole1</Name>
-      <Project>{3ac76df5-2260-494a-966c-b8c93014337a}</Project>
+      <Project>{8d39e12b-6eb5-42c3-8c84-5a3b4beb139d}</Project>
       <Private>True</Private>
       <RoleType>Worker</RoleType>
       <RoleName>WorkerRole1</RoleName>
@@ -55,7 +55,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Profiles" />
     <Folder Include="WebRole1Content\" />
     <Folder Include="WorkerRole1Content\" />
   </ItemGroup>
@@ -63,16 +62,10 @@
     <DiagnosticsConfiguration Include="WebRole1Content\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="WorkerRole1Content\diagnostics.wadcfgx" />
   </ItemGroup>
-  <ItemGroup>
-    <PublishProfile Include="Profiles\nnpa4Production.azurePubxml" />
-  </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
     <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Windows Azure Tools\2.9\</CloudExtensionsDir>
   </PropertyGroup>
   <Import Project="$(CloudExtensionsDir)Microsoft.WindowsAzure.targets" />
-  <PropertyGroup>
-    <PreBuildEvent />
-  </PropertyGroup>
 </Project>

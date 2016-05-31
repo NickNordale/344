@@ -25,7 +25,8 @@
             </div>
         </div>
         <div class="row" id="state-row">
-            <h4>Crawler state: 
+            <h4>
+                Crawler state:
                 <span class="label label-info" id="loading-label">Loading...</span>
                 <span class="label label-success" id="crawling-label">Crawling</span>
                 <span class="label label-warning" id="stopped-label">Stopped</span>
@@ -90,6 +91,7 @@
     <script>
         $(function () {
             hideAllLabels();
+            getTrieStats();
             setInterval(function() { getState(); }, 10000);
             setInterval(function() { getQueueSize(); }, 5000);
             setInterval(function() { getData(); }, 10000);
@@ -123,6 +125,34 @@
             });
         }
 
+        function getTrieStats() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getTrieStats",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data);
+                    if (data.d == "") {
+                        $("#trie-size-span").text("Trie hasn't been built yet.");
+                        $("#trie-size-span").addClass("text-danger");
+
+                        $("#last-title-span").text("Trie hasn't been built yet.");
+                        $("#last-title-span").addClass("text-danger");
+                    } else {
+                        var trieArray = $.parseJSON(data.d);
+                        $("#trie-size-span").removeClass("text-danger");
+                        $("#trie-size-span").text(trieArray.Item1);
+
+                        $("#last-title-span").removeClass("text-danger");
+                        $("#last-title-span").text(trieArray.Item2);
+                    }
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
         function getData() {
             $.ajax({
                 type: "POST",
@@ -137,21 +167,7 @@
                         $("#ram-span").text(dashArray.RAM);
                         $("#table-span").text(dashArray.SizeOfIndex);
 
-                        if (dashArray.TrieSize != null) {
-                            $("#trie-size-span").removeClass("text-danger");
-                            $("#trie-size-span").text(dashArray.TrieSize);
-                        } else {
-                            $("#trie-size-span").text("Trie hasn't been built yet.");
-                            $("#trie-size-span").addClass("text-danger");
-                        }
 
-                        if (dashArray.LastTitle != null) {
-                            $("#last-title-span").removeClass("text-danger");
-                            $("#last-title-span").text(dashArray.LastTitle);
-                        } else {
-                            $("#last-title-span").text("Trie hasn't been built yet.");
-                            $("#last-title-span").addClass("text-danger");
-                        }
 
                         $("#last10-tbody").empty();
                         if (dashArray.LastTenArr.length > 0) {

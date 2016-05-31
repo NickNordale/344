@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crawler Dashboard</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="dash.css" />
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="row" id="buttons-row">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-success" id="start-button">Start crawling</button>
+                <button type="button" class="btn btn-warning" id="stop-button">Stop crawling</button>
+                <button type="button" class="btn btn-danger" id="clear-button">Clear crawler</button>
+            </div>
+        </div>
+        <div class="row" id="state-row">
+            <h4>Crawler state: 
+                <span class="label label-info" id="loading-label">Loading...</span>
+                <span class="label label-success" id="crawling-label">Crawling</span>
+                <span class="label label-warning" id="stopped-label">Stopped</span>
+                <span class="label label-danger" id="cleared-label">Empty</span>
+            </h4>
+        </div>
+        <div class="row" id="stats-row">
+
+            <div class="col-xs-4" id="mc-col">
+                <div class="row">
+                    CPU utilization: <span id="cpu-span"></span>%
+                </div>
+                <div class="row">
+                    RAM available: <span id="ram-span"></span>MB
+                </div>
+            </div>
+
+            <div class="col-xs-4" id="size-col">
+                <div class="row">
+                    Table size: <span id="table-span"></span>
+                </div>
+                <div class="row">
+                    Queue size: <span id="queue-span"></span>
+                </div>
+            </div>
+
+            <div class="col-xs-4" id="trie-col">
+                <div class="row">
+                    Number of titles in trie: <span id="trie-size-span"></span>
+                </div>
+                <div class="row">
+                    Last title added: <span id="last-title-span"></span>
+                </div>
+            </div>
+
+        </div>
+        <div class="row" id="lists-row">
+
+            <div class="col-sm-6" id="last10-col">
+                <h4 class="text-primary">Recent URL's Crawled</h4>
+                <table class="table table-striped" id="last10-table">
+                    <tbody id="last10-tbody"></tbody>
+                </table>
+            </div>
+
+            <div class="col-sm-6" id="errors-col">
+                <h4 class="text-danger">Errors</h4>
+                <table class="table table-striped" id="errors-table">
+                    <tbody id="errors-tbody"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script>
+        $(function () {
+            hideAllLabels();
+            getTrieStats();
+            setInterval(function() { getState(); }, 10000);
+            setInterval(function() { getQueueSize(); }, 5000);
+            setInterval(function() { getData(); }, 10000);
+        });
+
+        function getState() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getState",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    showState(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
+        function getQueueSize() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getQueueSize",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#queue-span").text(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
+        function getTrieStats() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getTrieStats",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data);
+                    if (data.d == "") {
+                        $("#trie-size-span").text("Trie hasn't been built yet.");
+                        $("#trie-size-span").addClass("text-danger");
+
+                        $("#last-title-span").text("Trie hasn't been built yet.");
+                        $("#last-title-span").addClass("text-danger");
+                    } else {
+                        var trieArray = $.parseJSON(data.d);
+                        $("#trie-size-span").removeClass("text-danger");
+                        $("#trie-size-span").text(trieArray.Item1);
+
+                        $("#last-title-span").removeClass("text-danger");
+                        $("#last-title-span").text(trieArray.Item2);
+                    }
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
+        function getData() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/getAllStats",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.d != "") {
+                        var dashArray = $.parseJSON(data.d);
+                        console.log(dashArray);
+
+                        $("#cpu-span").text(dashArray.CPU);
+                        $("#ram-span").text(dashArray.RAM);
+                        $("#table-span").text(dashArray.SizeOfIndex);
+
+                        
+
+                        $("#last10-tbody").empty();
+                        if (dashArray.LastTenArr.length > 0) {
+                            $.each(dashArray.LastTenArr, function (index, value) {
+                                $("#last10-tbody").append("<tr><td>" + value + "</td></tr>");
+                            });
+                        } else {
+                            $("#last10-tbody").append('<tr><td>Haven\'t crawled any pages yet.</td></tr>');
+                        }
+
+                        $("#errors-tbody").empty();
+                        if (dashArray.ErrorsArr.length > 0) {
+                            $.each(dashArray.ErrorsArr, function (index, value) {
+                                $("#errors-tbody").append("<tr><td>" + value + "</td></tr>");
+                            });
+                        } else {
+                            $("#errors-tbody").append('<tr class="success"><td>No errors yet.</td></tr>');
+                        }
+                    }
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
+        function showState(state) {
+            hideAllLabels();
+            if (state == "load") {
+                $("#loading-label").show();
+            } else if (state == "crawl") {
+                $("#crawling-label").show();
+            } else if (state == "stop") {
+                $("#stopped-label").show();
+            } else if (state == "clear") {
+                $("#cleared-label").show();
+            }
+        }
+
+        function hideAllLabels() {
+            $("#loading-label").hide();
+            $("#crawling-label").hide();
+            $("#stopped-label").hide();
+            $("#cleared-label").hide();
+        }
+
+        $("#start-button").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/startCrawling",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        });
+
+        $("#stop-button").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/stopCrawling",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        });
+
+        $("#clear-button").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/clearCrawler",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
