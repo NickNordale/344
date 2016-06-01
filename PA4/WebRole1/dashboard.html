@@ -23,6 +23,9 @@
                 <button type="button" class="btn btn-warning" id="stop-button">Stop crawling</button>
                 <button type="button" class="btn btn-danger" id="clear-button">Clear crawler</button>
             </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" id="build-button">Download wiki then build Trie</button>
+            </div>
         </div>
         <div class="row" id="state-row">
             <h4>Crawler state: 
@@ -88,6 +91,39 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
     <script>
+        $("#build-button").click(function () {
+            downloadWiki();
+        });
+
+        function downloadWiki() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/downloadWiki",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data.d);
+                    buildTrie();
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
+        function buildTrie() {
+            $.ajax({
+                type: "POST",
+                url: "admin.asmx/buildTrie",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data.d);
+                },
+                error: function () {
+                    console.log("Error");
+                }
+            });
+        }
+
         $(function () {
             hideAllLabels();
             setInterval(function () { getTrieStats(); }, 10000);
@@ -130,7 +166,6 @@
                 url: "admin.asmx/getTrieStats",
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
-                    console.log(data);
                     if (data.d == "") {
                         $("#trie-size-span").text("Trie hasn't been built yet.");
                         $("#trie-size-span").addClass("text-danger");
@@ -160,7 +195,6 @@
                 success: function (data) {
                     if (data.d != "") {
                         var dashArray = $.parseJSON(data.d);
-                        console.log(dashArray);
 
                         $("#cpu-span").text(dashArray.CPU);
                         $("#ram-span").text(dashArray.RAM);
