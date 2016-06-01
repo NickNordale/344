@@ -64,7 +64,7 @@
     <DiagnosticsConfiguration Include="WorkerRole1Content\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
-    <PublishProfile Include="Profiles\nnpa4Production.azurePubxml" />
+    <PublishProfile Include="Profiles\nicknpa4Production.azurePubxml" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>

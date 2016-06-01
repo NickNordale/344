@@ -126,40 +126,40 @@ namespace WebRole1
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string buildTrie()
         {
-            PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
-
-            string last = "";
-            int totalCount = 0;
-            List<string> wikiTitles = new List<string>();
-            string wikiPath = System.IO.Path.GetTempPath() + "\\wiki.txt";
-            using (StreamReader sr = new StreamReader(wikiPath))
+            try
             {
-                while (sr.EndOfStream == false)
-                {
-                    string line = sr.ReadLine();
-                    wikiTitles.Add(line);
-                }
-            }
+                PerformanceCounter theMemCounter = new PerformanceCounter("Memory", "Available MBytes");
 
-            thisTrie = new Trie();
-            foreach (string title in wikiTitles)
-            {
-                if (totalCount > 1000000 && (totalCount % 5000 == 0))
+                string last = "";
+                int totalCount = 0;
+                List<string> wikiTitles = new List<string>();
+                string wikiPath = System.IO.Path.GetTempPath() + "\\wiki.txt";
+                wikiTitles = System.IO.File.ReadAllLines(wikiPath).ToList();
+
+                thisTrie = new Trie();
+                foreach (string title in wikiTitles)
                 {
-                    if (theMemCounter.NextValue() < 50)
+                    if (totalCount > 1000000 && (totalCount % 5000 == 0))
                     {
-                        last = title;
-                        break;
+                        if (theMemCounter.NextValue() < 50)
+                        {
+                            last = title;
+                            break;
+                        }
                     }
+                    thisTrie.addTitle(title);
+                    totalCount++;
                 }
-                thisTrie.addTitle(title);
-                totalCount++;
+
+                trieSize = totalCount.ToString();
+                lastTitle = last;
+
+                return "total: " + totalCount + ", last: " + last;
             }
-
-            trieSize = totalCount.ToString();
-            lastTitle = last;
-
-            return "total: " + totalCount + ", last: " + last;
+            catch (Exception e)
+            {
+                return jsSerializer.Serialize(e);
+            }
         }
 
         [WebMethod]

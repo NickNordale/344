@@ -29,7 +29,7 @@ namespace PA4ClassLibrary
         public static CloudQueue UrlQueue = queueClient.GetQueueReference("pafurlqueue");
         public static CloudQueue StatusQueue = queueClient.GetQueueReference("pafstatusqueue");
 
-        public static CloudBlobContainer container = blobClient.GetContainerReference("data");
+        public static CloudBlobContainer container = blobClient.GetContainerReference("container");
         public static CloudBlockBlob BlockBlob = container.GetBlockBlobReference("ValidTitles_lowercase_nodigits.txt");
 
         static Storage()
